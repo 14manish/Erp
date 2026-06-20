@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Components -->
+        <record id="product_flight_controller" model="product.product">
+            <field name="name">Flight Controller v1</field>
+            <field name="type">product</field>
+            <field name="tracking">serial</field>
+        </record>
+
+        <record id="product_bldc_motor" model="product.product">
+            <field name="name">BLDC Motor 1000KV</field>
+            <field name="type">product</field>
+            <field name="tracking">lot</field>
+        </record>
+
+        <record id="product_carbon_frame" model="product.product">
+            <field name="name">Carbon Fiber Frame</field>
+            <field name="type">product</field>
+            <field name="tracking">none</field>
+        </record>
+
+        <!-- Final Drone -->
+        <record id="product_scout_drone" model="product.product">
+            <field name="name">Scout Drone v1</field>
+            <field name="type">product</field>
+            <field name="tracking">serial</field>
+        </record>
+    </data>
+</odoo>

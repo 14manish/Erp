@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_production_lot_form_inherit_drone" model="ir.ui.view">
+        <field name="name">stock.lot.form.inherit.drone</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <!-- We will insert a new notebook page for Drone specifics -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Drone Traceability" name="drone_traceability_page">
+                    <group>
+                        <group>
+                            <field name="is_critical_component"/>
+                            <field name="compliance_status"/>
+                        </group>
+                        <group>
+                            <field name="firmware_version" invisible="not is_critical_component"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
