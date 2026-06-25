@@ -1,4 +1,4 @@
-# Aerospace Drone Manufacturing ERP
+# Drone Manufacturing ERP
 
 An end-to-end Enterprise Resource Planning (ERP) implementation built on **Odoo 17 Community Edition**, specifically tailored for aerospace manufacturing and drone assembly.
 
