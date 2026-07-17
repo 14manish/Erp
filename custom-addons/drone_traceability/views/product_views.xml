@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_inherit_flight_status" model="ir.ui.view">
+        <field name="name">product.template.common.form.inherit.flight.status</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="flight_test_status" widget="badge" 
+                       decoration-success="flight_test_status == 'passed'" 
+                       decoration-danger="flight_test_status == 'failed'" 
+                       decoration-warning="flight_test_status == 'untested'"/>
+                <field name="product_serial_no"/>
+                <field name="model"/>
+                <field name="version"/>
+                <field name="component_trader"/>
+                <field name="country_of_origin"/>
+                <field name="product_link" widget="url"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

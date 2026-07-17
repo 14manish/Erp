@@ -12,6 +12,10 @@
     'depends': ['stock', 'mrp'],
     'data': [
         'views/stock_lot_views.xml',
+        'views/product_views.xml',
+        'views/mrp_bom_views.xml',
+        'views/login_views.xml',
+        'reports/bom_report.xml',
         'data/drone_demo_data.xml',
     ],
     'installable': True,

@@ -1,0 +1,18 @@
+# Database backups and zip archives
+drone_erp_2026-06-30_04-35-55/
+drone_erp_2026-06-30_04-35-55.zip
+*.zip
+
+# Images and other temporary assets in root
+WhatsApp Image*.jpeg
+com.jpeg
+mrp_bom_views_dump.xml
+webclient_templates.xml
+
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+
+# IDE settings
+.vscode/
+.idea/

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_bom_landscape" model="report.paperformat">
+        <field name="name">BOM Landscape</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_custom_bom" model="ir.actions.report">
+        <field name="name">BOM (Wingspann)</field>
+        <field name="model">mrp.bom</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">drone_traceability.report_custom_bom_document</field>
+        <field name="report_file">drone_traceability.report_custom_bom_document</field>
+        <field name="print_report_name">'BOM - %s' % (object.product_tmpl_id.name)</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="drone_traceability.paperformat_bom_landscape"/>
+    </record>
+
+    <template id="report_custom_bom_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-12 text-end" style="text-align: right;">
+                                <strong>Modular Surveillance Drone - Wingspann Global Pvt. Ltd.</strong><br/>
+                                <strong>Internal Manufacturing Cost - BOM</strong><br/>
+                                <strong><span t-field="o.product_tmpl_id.name"/></strong>
+                            </div>
+                        </div>
+                        
+                        <table class="table table-bordered mt-4" style="border: 2px solid black; width: 100%;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2; border-bottom: 2px solid black; text-align: center; font-size: 12px;">
+                                    <th>Items</th>
+                                    <th>Serial No</th>
+                                    <th>Model/ Make</th>
+                                    <th>Component Trader</th>
+                                    <th>Country of Origin</th>
+                                    <th>Weight (gm)</th>
+                                    <th>Product Link</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-size: 11px;">
+                                <t t-set="total_bom_cost" t-value="0"/>
+                                <t t-foreach="o.bom_line_ids" t-as="line">
+                                    <t t-set="unit_price" t-value="line.product_id.standard_price"/>
+                                    <t t-set="total_price" t-value="unit_price * line.product_qty"/>
+                                    <t t-set="total_bom_cost" t-value="total_bom_cost + total_price"/>
+                                    <tr>
+                                        <td><span t-field="line.product_id.name"/></td>
+                                        <td style="text-align: center;"><span t-field="line.product_id.product_serial_no"/></td>
+                                        <td style="text-align: center;">
+                                            <t t-if="line.product_id.model or line.product_id.version">
+                                                <span t-field="line.product_id.model"/> <span t-field="line.product_id.version"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="line.product_id.name"/>
+                                            </t>
+                                        </td>
+                                        <td style="text-align: center;"><span t-field="line.product_id.component_trader"/></td>
+                                        <td style="text-align: center;"><span t-field="line.product_id.country_of_origin"/></td>
+                                        <td style="text-align: center;"><span t-field="line.product_id.weight"/></td>
+                                        <td style="text-align: left; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <a t-att-href="line.product_id.product_link" t-if="line.product_id.product_link"><span t-field="line.product_id.product_link"/></a>
+                                        </td>
+                                        <td style="text-align: center;"><span t-esc="line.product_qty"/> <span t-field="line.product_uom_id.name"/></td>
+                                        <td style="text-align: right;"><span t-esc="unit_price" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
+                                        <td style="text-align: right;"><span t-esc="total_price" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        
+                        <div class="row mt-4">
+                            <div class="col-8"></div>
+                            <div class="col-4 text-end" style="text-align: right;">
+                                <strong>Drone Price: </strong> 
+                                <strong><span t-esc="total_bom_cost" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></strong>
+                            </div>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-12 text-center" style="text-align: center;">
+                                <h3 style="color: red; font-style: italic;">Highly Confidential</h3>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_login_layout" inherit_id="web.login_layout" name="Custom Login Background">
+        <!-- Replace default container with custom two-column layout -->
+        <xpath expr="//div[contains(@class, 'container')]" position="replace">
+            <div class="custom-login-container container-fluid d-flex align-items-center justify-content-center min-vh-100">
+                <div class="custom-glass-box row w-100 no-gutters">
+                    <!-- Left Column: Vision and Mission -->
+                    <div class="col-lg-7 left-panel d-flex flex-column justify-content-between p-5 text-white">
+                        <div class="logo-section mb-4">
+                            <h2 class="company-name font-weight-bold">WINGSPANN GLOBAL</h2>
+                        </div>
+                        <div class="content-section">
+                            <div class="vision-box mb-4">
+                                <h4 class="section-title">Vision</h4>
+                                <p class="section-text">
+                                    At Wingspann Global, our vision is to redefine the future of aerospace by building intelligent, reliable, and high-performance autonomous aerial systems. We aim to drive innovation in drone technology by integrating advanced engineering, AI-driven autonomy, and modern avionics to create solutions that enhance efficiency, safety, and decision-making. Through continuous innovation and a strong focus on quality, we aspire to become a trusted partner across defense, industrial, and commercial sectors, enabling the next generation of mission-ready aviation.
+                                </p>
+                            </div>
+                            <div class="mission-box">
+                                <h4 class="section-title">Mission</h4>
+                                <p class="section-text">
+                                    Our mission is to design, develop, and deliver cutting-edge unmanned aerial systems and drone-based solutions that address real-world operational challenges. We are committed to advancing next-generation UAV technologies that are scalable, cost-effective, and performance-driven, while supporting diverse applications such as surveillance, mapping, inspection, and data acquisition. By combining technical expertise, innovation, and a growing quality-driven approach, we strive to provide reliable and efficient solutions that empower industries with actionable aerial intelligence and long-term value.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Login Form -->
+                    <div class="col-lg-5 right-panel d-flex align-items-center justify-content-center p-5">
+                        <div class="login-card-wrapper w-100">
+                            <div class="login-header text-center mb-4 text-white">
+                                <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo" class="company-logo mb-3"/>
+                                <h3 class="font-weight-bold">Welcome!</h3>
+                                <p class="text-white-50 small">Please login to continue</p>
+                            </div>
+                            <!-- Inject core Odoo login inputs and submit button -->
+                            <t t-out="0"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap');
+                
+                /* Apply fonts */
+                * {
+                    font-family: 'Plus Jakarta Sans', sans-serif !important;
+                }
+                
+                .company-name, .section-title, .login-header h3 {
+                    font-family: 'Lora', serif !important;
+                }
+                
+                /* Custom Two-Column Layout Styling */
+                body {
+                    background-image: url('/drone_traceability/static/src/img/background.jpg') !important;
+                    background-size: cover !important;
+                    background-position: center !important;
+                    background-repeat: no-repeat !important;
+                    background-attachment: fixed !important;
+                }
+                
+                .custom-login-container {
+                    padding: 2rem;
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                }
+                
+                .custom-glass-box {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    background: rgba(15, 23, 42, 0.45) !important; /* Sleek dark slate tint */
+                    backdrop-filter: blur(25px) saturate(180%) !important;
+                    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                    border-radius: 28px !important;
+                    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
+                    overflow: hidden;
+                }
+                
+                .left-panel {
+                    background: rgba(15, 23, 42, 0.25);
+                    border-right: 1px solid rgba(255, 255, 255, 0.08);
+                }
+                
+                .company-logo {
+                    max-height: 120px;
+                    width: auto;
+                    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+                }
+                
+                .company-name {
+                    font-size: 1.8rem;
+                    letter-spacing: 2px;
+                    font-weight: 700 !important;
+                    background: linear-gradient(135deg, #ffffff, #cbd5e1);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                
+                .section-title {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    margin-bottom: 0.75rem;
+                    color: #38bdf8 !important; /* Sky Blue accent for futuristic aerospace feel */
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                
+                .section-text {
+                    font-size: 0.92rem;
+                    line-height: 1.6;
+                    color: #cbd5e1 !important;
+                    text-align: justify;
+                }
+                
+                .right-panel {
+                    background: rgba(15, 23, 42, 0.15);
+                }
+                
+                .login-card-wrapper {
+                    max-width: 400px;
+                    margin: 0 auto;
+                }
+                
+                /* Form Control and Input Styling overrides */
+                .login-card-wrapper label {
+                    color: #e2e8f0 !important;
+                    font-weight: 500;
+                    margin-bottom: 0.5rem;
+                    font-size: 0.9rem;
+                    text-align: left;
+                    display: block;
+                }
+                
+                .login-card-wrapper input.form-control {
+                    background: rgba(255, 255, 255, 0.08) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+                    color: #ffffff !important;
+                    border-radius: 10px !important;
+                    padding: 0.75rem 1rem !important;
+                    height: auto !important;
+                    transition: all 0.3s ease;
+                }
+                
+                .login-card-wrapper input.form-control:focus {
+                    background: rgba(255, 255, 255, 0.12) !important;
+                    border-color: #38bdf8 !important;
+                    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+                }
+                
+                .login-card-wrapper button[type="submit"] {
+                    background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+                    border: none !important;
+                    color: #ffffff !important;
+                    border-radius: 10px !important;
+                    padding: 0.75rem 1.5rem !important;
+                    font-weight: 600 !important;
+                    letter-spacing: 0.5px;
+                    transition: all 0.3s ease !important;
+                    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+                    width: 100%;
+                    margin-top: 1rem;
+                }
+                
+                .login-card-wrapper button[type="submit"]:hover {
+                    background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important;
+                    transform: translateY(-1px);
+                    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4) !important;
+                }
+                
+                .login-card-wrapper a {
+                    color: #38bdf8 !important;
+                    font-size: 0.85rem;
+                    text-decoration: none;
+                    transition: color 0.2s ease;
+                }
+                
+                .login-card-wrapper a:hover {
+                    color: #7dd3fc !important;
+                    text-decoration: underline;
+                }
+                
+                /* Hide standard Odoo database selector link and powered by odoo */
+                .border-top, .text-center.small.mt-4.pt-3 {
+                    display: none !important;
+                }
+                
+                /* Remove standard Odoo card border and white background wrapper */
+                .card {
+                    background: transparent !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                
+                .card-body {
+                    padding: 0 !important;
+                    background: transparent !important;
+                }
+                
+                .border-bottom {
+                    border-bottom: none !important;
+                    display: none !important; /* Hide secondary logo wrapper from core card */
+                }
+            </style>
+        </xpath>
+    </template>
+</odoo>
