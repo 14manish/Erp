@@ -2,6 +2,7 @@
 services:
   db:
     image: postgres:15
+    restart: unless-stopped
     environment:
       POSTGRES_USER: odoo
       POSTGRES_PASSWORD: odoo
@@ -11,6 +12,7 @@ services:
 
   odoo:
     image: odoo:17.0
+    restart: unless-stopped
     depends_on:
       - db
     ports:
