@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_move_waybill_wizard_form" model="ir.ui.view">
+        <field name="name">account.move.waybill.wizard.form</field>
+        <field name="model">account.move.waybill.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Waybill Details">
+                <group>
+                    <group string="Basic Details">
+                        <field name="ewaybill_no"/>
+                        <field name="ewaybill_date"/>
+                        <field name="transaction_type"/>
+                        <field name="reason_for_transport"/>
+                    </group>
+                    <group string="Transporter Details">
+                        <field name="transporter_name"/>
+                        <field name="vehicle_no"/>
+                        <field name="transport_doc_no"/>
+                        <field name="transport_doc_date"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="transportation_address"/>
+                </group>
+                <footer>
+                    <button name="action_save_waybill" type="object" string="Save Waybill" class="btn-primary"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -61,12 +61,40 @@
                         </td>
                         <!-- Invoice Meta -->
                         <td style="width: 50%; border-bottom: 1px solid black; vertical-align: top; padding: 0;">
-                            <table style="width: 100%; padding: 4px 8px; margin: 4px; margin-top: 28px;">
-                                <tr><td style="width: 40%;"><strong>Nature of Document</strong></td><td>INV</td></tr>
-                                <tr><td><strong>Invoice Date</strong></td><td><span t-field="o.invoice_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td></tr>
-                                <tr><td><strong>PO Date</strong></td><td></td></tr>
-                                <tr><td><strong>PO Number</strong></td><td><span t-field="o.invoice_origin"/></td></tr>
-                                <tr><td><strong>Reference</strong></td><td><span t-field="o.ref"/></td></tr>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <tr>
+                                    <td style="width: 33%; border-right: 1px solid black; border-bottom: 1px solid black; padding: 4px;">
+                                        Invoice No.<br/>
+                                        <strong><span t-field="o.name"/></strong>
+                                    </td>
+                                    <td style="width: 33%; border-right: 1px solid black; border-bottom: 1px solid black; padding: 4px;">
+                                        e-Way Bill No.<br/>
+                                        <strong><span t-field="o.x_ewaybill_no"/></strong>
+                                    </td>
+                                    <td style="width: 34%; border-bottom: 1px solid black; padding: 4px;">
+                                        Dated<br/>
+                                        <strong><span t-field="o.invoice_date" t-options='{"widget": "date", "format": "dd-MMM-yy"}'/></strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="border-right: 1px solid black; border-bottom: 1px solid black; padding: 4px;">
+                                        Reference No. &amp; Date.<br/>
+                                        <strong><span t-field="o.ref"/></strong>
+                                    </td>
+                                    <td style="border-bottom: 1px solid black; padding: 4px;">
+                                        Other References<br/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="border-right: 1px solid black; padding: 4px;">
+                                        Buyer's Order No.<br/>
+                                        <strong><span t-field="o.invoice_origin"/></strong>
+                                    </td>
+                                    <td style="padding: 4px;">
+                                        Dated<br/>
+                                        <strong></strong>
+                                    </td>
+                                </tr>
                             </table>
                         </td>
                     </tr>

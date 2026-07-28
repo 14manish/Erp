@@ -2,7 +2,7 @@ import xmlrpc.client
 import sys
 
 url = 'http://localhost:8069'
-db = 'Wingspann_DB'
+db = 'Wingspann'
 username = 'test@example.com'
 password = 'Admin@123'
 

@@ -10,6 +10,34 @@
                 <attribute name="column_invisible">1</attribute>
                 <attribute name="optional">hide</attribute>
             </xpath>
+
+            <!-- Add Update Waybill Button -->
+            <xpath expr="//header" position="inside">
+                <button name="action_open_waybill_wizard" type="object" string="Update Waybill" class="btn-secondary" invisible="state == 'draft'"/>
+            </xpath>
+
+            <!-- Add Waybill Details Page -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Waybill Details" name="waybill_details">
+                    <group>
+                        <group string="Basic Details">
+                            <field name="x_ewaybill_no"/>
+                            <field name="x_ewaybill_date"/>
+                            <field name="x_transaction_type"/>
+                            <field name="x_reason_for_transport"/>
+                        </group>
+                        <group string="Transporter Details">
+                            <field name="x_transporter_name"/>
+                            <field name="x_vehicle_no"/>
+                            <field name="x_transport_doc_no"/>
+                            <field name="x_transport_doc_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="x_transportation_address"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 </odoo>

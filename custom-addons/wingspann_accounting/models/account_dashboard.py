@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 class AccountDashboard(models.TransientModel):
     _name = 'wingspann.accounting.dashboard'
@@ -74,10 +76,55 @@ class AccountDashboard(models.TransientModel):
 
         currency_symbol = self.env.company.currency_id.symbol or '$'
 
+        # Analytics for Payments (Weekly and Monthly)
+        today = fields.Date.context_today(self)
+        start_of_week = today - timedelta(days=today.weekday())
+        start_of_month = today.replace(day=1)
+
+        # Incoming Payments (Receivables Analytics)
+        domain_in_month = [('payment_type', '=', 'inbound'), ('state', '=', 'posted'), ('company_id', '=', company_id), ('date', '>=', start_of_month)]
+        res_in_month = self.env['account.payment'].read_group(domain_in_month, ['amount:sum'], [])
+        incoming_monthly = res_in_month[0]['amount'] if res_in_month and res_in_month[0].get('amount') else 0.0
+
+        domain_in_week = [('payment_type', '=', 'inbound'), ('state', '=', 'posted'), ('company_id', '=', company_id), ('date', '>=', start_of_week)]
+        res_in_week = self.env['account.payment'].read_group(domain_in_week, ['amount:sum'], [])
+        incoming_weekly = res_in_week[0]['amount'] if res_in_week and res_in_week[0].get('amount') else 0.0
+
+        recent_incoming = self.env['account.payment'].search_read(
+            [('payment_type', '=', 'inbound'), ('state', '=', 'posted'), ('company_id', '=', company_id)],
+            ['name', 'date', 'partner_id', 'amount'], limit=5, order='date desc, id desc'
+        )
+        for r in recent_incoming:
+            r['date'] = r['date'].strftime('%Y-%m-%d') if r['date'] else ''
+            r['partner'] = r['partner_id'][1] if r['partner_id'] else 'N/A'
+
+        # Outgoing Payments (Payables Analytics)
+        domain_out_month = [('payment_type', '=', 'outbound'), ('state', '=', 'posted'), ('company_id', '=', company_id), ('date', '>=', start_of_month)]
+        res_out_month = self.env['account.payment'].read_group(domain_out_month, ['amount:sum'], [])
+        outgoing_monthly = res_out_month[0]['amount'] if res_out_month and res_out_month[0].get('amount') else 0.0
+
+        domain_out_week = [('payment_type', '=', 'outbound'), ('state', '=', 'posted'), ('company_id', '=', company_id), ('date', '>=', start_of_week)]
+        res_out_week = self.env['account.payment'].read_group(domain_out_week, ['amount:sum'], [])
+        outgoing_weekly = res_out_week[0]['amount'] if res_out_week and res_out_week[0].get('amount') else 0.0
+
+        recent_outgoing = self.env['account.payment'].search_read(
+            [('payment_type', '=', 'outbound'), ('state', '=', 'posted'), ('company_id', '=', company_id)],
+            ['name', 'date', 'partner_id', 'amount'], limit=5, order='date desc, id desc'
+        )
+        for r in recent_outgoing:
+            r['date'] = r['date'].strftime('%Y-%m-%d') if r['date'] else ''
+            r['partner'] = r['partner_id'][1] if r['partner_id'] else 'N/A'
+
         return {
             'cash_balance': cash_balance,
             'receivables': receivables,
             'payables': payables,
             'recent_moves': formatted_moves,
-            'currency_symbol': currency_symbol
+            'currency_symbol': currency_symbol,
+            'incoming_monthly': incoming_monthly,
+            'incoming_weekly': incoming_weekly,
+            'recent_incoming': recent_incoming,
+            'outgoing_monthly': outgoing_monthly,
+            'outgoing_weekly': outgoing_weekly,
+            'recent_outgoing': recent_outgoing,
         }

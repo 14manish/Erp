@@ -5,3 +5,4 @@ access_inventory_issue_note_line_user,inventory.issue.note.line.user,model_inven
 access_inventory_issue_note_line_manager,inventory.issue.note.line.manager,model_inventory_issue_note_line,stock.group_stock_manager,1,1,1,1
 access_vendor_comparison_wizard,access_vendor_comparison_wizard,model_vendor_comparison_wizard,base.group_user,1,1,1,1
 access_vendor_comparison_line,access_vendor_comparison_line,model_vendor_comparison_line,base.group_user,1,1,1,1
+access_account_move_waybill_wizard,access_account_move_waybill_wizard,model_account_move_waybill_wizard,base.group_user,1,1,1,1

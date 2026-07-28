@@ -7,11 +7,28 @@ class PurchaseOrder(models.Model):
     x_quotation_ref = fields.Char(string="Your Quotation No")
     x_quotation_date = fields.Date(string="Quotation Date")
     x_kind_attn = fields.Char(string="Kind Attn")
+    @api.model
+    def default_get(self, fields_list):
+        res = super(PurchaseOrder, self).default_get(fields_list)
+        if 'name' in fields_list and res.get('name', 'New') == 'New':
+            seq = self.env['ir.sequence'].next_by_code('purchase.order') or '/'
+            if '[FY]' in seq:
+                date_order = res.get('date_order') or fields.Datetime.now()
+                if isinstance(date_order, str):
+                    date_order = fields.Datetime.from_string(date_order)
+                year = date_order.year
+                if date_order.month < 4:
+                    fy = f"{year - 1}-{str(year)[-2:]}"
+                else:
+                    fy = f"{year}-{str(year + 1)[-2:]}"
+                seq = seq.replace('[FY]', fy)
+            res['name'] = seq
+        return res
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('name', 'New') == 'New':
+            if not vals.get('name') or vals.get('name') == 'New':
                 # Let standard sequence engine generate the number first, using a placeholder [FY]
                 date_order = vals.get('date_order') or fields.Datetime.now()
                 if isinstance(date_order, str):

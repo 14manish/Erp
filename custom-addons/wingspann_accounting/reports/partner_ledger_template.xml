@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_report_partner_ledger" model="ir.actions.report">
-        <field name="name">Partner Ledger</field>
+        <field name="name">Customer Ledger</field>
         <field name="model">wingspann.partner.ledger.wizard</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">wingspann_accounting.report_partner_ledger</field>
@@ -15,7 +15,7 @@
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <h2 class="text-center mt-3 mb-4">Partner Ledger</h2>
+                    <h2 class="text-center mt-3 mb-4">Customer Ledger</h2>
                     
                     <div class="row mb-4">
                         <div class="col-6">

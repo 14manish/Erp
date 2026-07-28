@@ -13,9 +13,17 @@ export class WingspannAccountingDashboard extends Component {
                 receivables: 0.0,
                 payables: 0.0,
                 recent_moves: [],
-                currency_symbol: '$'
+                currency_symbol: '$',
+                incoming_monthly: 0.0,
+                incoming_weekly: 0.0,
+                recent_incoming: [],
+                outgoing_monthly: 0.0,
+                outgoing_weekly: 0.0,
+                recent_outgoing: [],
             },
             isLoading: true,
+            showAnalyticsModal: false,
+            analyticsType: 'receivables',
         });
 
         onWillStart(async () => {
@@ -56,11 +64,44 @@ export class WingspannAccountingDashboard extends Component {
     }
     
     viewBank() {
-        this.action.doAction('account.action_account_bank_journal_form');
+        this.action.doAction('account.open_account_journal_dashboard_kanban');
     }
     
     viewJournalItems() {
         this.action.doAction('account.action_account_moves_all_a');
+    }
+
+    openReceivablesAnalytics() {
+        this.state.analyticsType = 'receivables';
+        this.state.showAnalyticsModal = true;
+    }
+
+    openPayablesAnalytics() {
+        this.state.analyticsType = 'payables';
+        this.state.showAnalyticsModal = true;
+    }
+
+    closeAnalyticsModal() {
+        this.state.showAnalyticsModal = false;
+    }
+
+    viewPayments(type) {
+        this.closeAnalyticsModal();
+        let domain = [['state', '=', 'posted']];
+        if (type === 'inbound') {
+            domain.push(['payment_type', '=', 'inbound']);
+        } else {
+            domain.push(['payment_type', '=', 'outbound']);
+        }
+        
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: type === 'inbound' ? 'Customer Payments' : 'Vendor Payments',
+            res_model: 'account.payment',
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+        });
     }
     
     formatCurrency(value) {
