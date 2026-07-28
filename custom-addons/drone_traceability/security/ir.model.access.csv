@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_inventory_issue_note_user,inventory.issue.note.user,model_inventory_issue_note,stock.group_stock_user,1,1,1,0
+access_inventory_issue_note_manager,inventory.issue.note.manager,model_inventory_issue_note,stock.group_stock_manager,1,1,1,1
+access_inventory_issue_note_line_user,inventory.issue.note.line.user,model_inventory_issue_note_line,stock.group_stock_user,1,1,1,0
+access_inventory_issue_note_line_manager,inventory.issue.note.line.manager,model_inventory_issue_note_line,stock.group_stock_manager,1,1,1,1
+access_vendor_comparison_wizard,access_vendor_comparison_wizard,model_vendor_comparison_wizard,base.group_user,1,1,1,1
+access_vendor_comparison_line,access_vendor_comparison_line,model_vendor_comparison_line,base.group_user,1,1,1,1

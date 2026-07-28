@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Client action registered with the JS registry key -->
+        <record id="action_mrp_workcenter_gantt" model="ir.actions.client">
+            <field name="name">Work Center Schedule</field>
+            <field name="tag">mrp_gantt_client_action</field>
+            <field name="target">current</field>
+        </record>
+
+        <!-- Menu item under Manufacturing > Operations (mrp.menu_mrp_manufacturing = id 336) -->
+        <record id="menu_mrp_workcenter_gantt" model="ir.ui.menu">
+            <field name="name">Work Center Schedule</field>
+            <field name="parent_id" ref="mrp.menu_mrp_manufacturing"/>
+            <field name="action" ref="action_mrp_workcenter_gantt"/>
+            <field name="sequence">20</field>
+        </record>
+
+    </data>
+</odoo>

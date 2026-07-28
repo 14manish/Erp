@@ -1,0 +1,556 @@
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Odoo</title>
+    <link rel="shortcut icon" href="/web/static/img/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/web/static/src/libs/fontawesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css" />
+    <script src="/web/static/lib/bootstrap/js/dist/dom/data.js"></script>
+    <script src="/web/static/lib/bootstrap/js/dist/dom/event-handler.js"></script>
+    <script src="/web/static/lib/bootstrap/js/dist/dom/manipulator.js"></script>
+    <script src="/web/static/lib/bootstrap/js/dist/dom/selector-engine.js"></script>
+    <script src="/web/static/lib/bootstrap/js/dist/base-component.js"></script>
+    <script src="/web/static/lib/bootstrap/js/dist/modal.js"></script>
+
+    <script src="/web/static/src/public/database_manager.js"></script>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+        /* Apply fonts */
+        body,
+        .custom-login-container,
+        input,
+        button {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+
+        .company-name,
+        .section-title,
+        .login-header h3 {
+            font-family: 'Lora', serif !important;
+        }
+
+        /* Custom Two-Column Layout Styling */
+        body {
+            background-image: url('/drone_traceability/static/src/img/background.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+        }
+
+        .custom-login-container {
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-glass-box {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.45) !important;
+            /* Sleek dark slate tint */
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            background: rgba(15, 23, 42, 0.25);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .company-logo {
+            max-height: 100px;
+            width: auto;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .company-name {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            font-weight: 700 !important;
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #38bdf8 !important;
+            /* Sky Blue accent for futuristic aerospace feel */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-text {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: #cbd5e1 !important;
+            text-align: justify;
+        }
+
+        .right-panel {
+            background: rgba(15, 23, 42, 0.15);
+        }
+
+        .login-card-wrapper {
+            width: 100%;
+        }
+
+        /* Form Control and Input Styling overrides */
+        .login-card-wrapper label,
+        .list-group-item,
+        .alert {
+            color: #e2e8f0 !important;
+            font-weight: 500;
+        }
+
+        .login-card-wrapper input.form-control,
+        select.form-select {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            padding: 0.75rem 1rem !important;
+            height: auto !important;
+            transition: all 0.3s ease;
+        }
+
+        .login-card-wrapper input.form-control:focus,
+        select.form-select:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+        }
+
+        .login-card-wrapper .btn-primary,
+        .login-card-wrapper .btn-secondary,
+        .login-card-wrapper .btn-danger {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+            border: none !important;
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+        }
+
+        .login-card-wrapper .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+        }
+
+        .login-card-wrapper .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569) !important;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3) !important;
+        }
+
+        .login-card-wrapper .btn-primary:hover,
+        .login-card-wrapper .btn-secondary:hover,
+        .login-card-wrapper .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .login-card-wrapper .btn-group .btn {
+            padding: 0.5rem 0.75rem !important;
+            font-size: 0.85rem !important;
+            border-radius: 6px !important;
+            margin: 0 2px;
+            white-space: nowrap !important;
+        }
+
+        .login-card-wrapper a {
+            color: #38bdf8 !important;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .login-card-wrapper a:hover {
+            color: #7dd3fc !important;
+            text-decoration: underline;
+        }
+
+        /* Database Manager Specifics */
+        .list-group-item {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            margin-bottom: 8px;
+            border-radius: 12px !important;
+        }
+
+        .alert {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.85) !important;
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 28px !important;
+            color: #ffffff;
+        }
+
+        .modal-header,
+        .modal-footer {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .modal-title {
+            color: #ffffff !important;
+            font-family: 'Lora', serif !important;
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="custom-login-container container-fluid d-flex align-items-center justify-content-center min-vh-100">
+        <div class="custom-glass-box row w-100 no-gutters">
+            <!-- Left Column: Company Name -->
+            <div
+                class="col-lg-4 left-panel d-flex flex-column justify-content-center align-items-center p-5 text-white">
+                <div class="logo-section text-center">
+                    <img src="/drone_traceability/static/src/img/Icon.png" alt="Wingspann Logo" class="company-logo">
+                    <!-- <h2 class="company-name font-weight-bold mb-0">WINGSPANN GLOBAL</h2> -->
+                </div>
+            </div>
+
+            <!-- Right Column: Form -->
+            <div class="col-lg-8 right-panel d-flex align-items-center justify-content-center p-5">
+                <div class="login-card-wrapper w-100">
+                    <div class="login-header text-center mb-4 text-white">
+                        <h3 class="font-weight-bold">Database Manager</h3>
+                    </div>
+
+                    <div class="o_database_list">
+
+                        <t t-if="not list_db">
+                            <div class="alert alert-danger text-center">The database manager has been disabled by the
+                                administrator</div>
+                        </t>
+                        <t t-elif="insecure and databases">
+                            <div class="alert alert-warning">
+                                Warning, your database manager is not protected.<br />
+                                Please <a href="#" data-bs-toggle="modal" data-bs-target=".o_database_master">set a
+                                    master password</a> to secure it.
+                            </div>
+                        </t>
+                        <t t-if="error">
+                            <div class="alert alert-danger" t-out="error"></div>
+                        </t>
+                        <t t-if="list_db and databases">
+                            <div class="list-group">
+
+                                <t t-foreach="databases" t-as="db">
+                                    <div class="list-group-item d-flex align-items-center">
+                                        <a t-attf-href="/web?db={{ db }}" class="d-block flex-grow-1">
+                                            <t t-if="db in incompatible_databases">
+                                                <i class="icon fa fa-warning float-end text-warning"
+                                                    title="This database may not be compatible"></i>
+                                            </t>
+                                            <t t-out="db" />
+                                        </a>
+                                        <t t-if="manage">
+                                            <div class="btn-group btn-group-sm float-end">
+                                                <button type="button" t-att-data-db="db"
+                                                    data-bs-target=".o_database_backup"
+                                                    class="o_database_action btn btn-primary">
+                                                    <i class="fa fa-floppy-o fa-fw"></i> Backup
+                                                </button>
+                                                <button type="button" t-att-data-db="db"
+                                                    data-bs-target=".o_database_duplicate"
+                                                    class="o_database_action btn btn-secondary">
+                                                    <i class="fa fa-files-o fa-fw"></i> Duplicate
+                                                </button>
+                                                <button type="button" t-att-data-db="db"
+                                                    data-bs-target=".o_database_delete"
+                                                    class="o_database_action btn btn-danger">
+                                                    <i class="fa fa-trash-o fa-fw"></i> Delete
+                                                </button>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                            <t t-if="manage">
+                                <div class="d-flex flex-column gap-2 mt-4">
+                                    <button type="button" data-bs-toggle="modal" data-bs-target=".o_database_create"
+                                        class="btn btn-primary w-100">Create Database</button>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target=".o_database_restore"
+                                        class="btn btn-primary w-100">Restore Database</button>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target=".o_database_master"
+                                        class="btn btn-primary w-100">Set Master Password</button>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center mt-2">
+                                    <a href="/web/database/manager">Manage databases</a>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-elif="list_db">
+                            <form role="form" action="/web/database/create" method="post">
+                                <t t-call="create_form" />
+                                <input type="submit" value="Create database" class="btn btn-primary float-start" />
+                            </form>
+                            <a role="button" data-bs-toggle="modal" data-bs-target=".o_database_restore"
+                                class="btn btn-link">or restore a database</a>
+                        </t>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create -->
+    <div class="modal fade o_database_create" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form role="form" action="/web/database/create" method="post">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Create Database</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <t t-call="create_form" />
+                        <small class="text-muted">
+                            To enhance your experience, some data may be sent to Odoo online services. See our <a
+                                href="https://www.odoo.com/privacy" target="_blank">Privacy Policy</a>.
+                        </small>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Continue" class="btn btn-primary float-end" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore -->
+    <div class="modal fade o_database_restore" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Restore Database</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_restore_db" role="form" action="/web/database/restore" method="post"
+                    enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <t t-call="master_input" />
+                        <div class="row mb-3">
+                            <label for="backup_file" class="col-md-4 col-form-label">File</label>
+                            <div class="col-md-8">
+                                <input id="backup_file" type="file" name="backup_file" class="required" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="dbname_restore" class="col-md-4 col-form-label">Database Name</label>
+                            <div class="col-md-8">
+                                <input id="dbname_restore" type="text" name="name" class="form-control"
+                                    required="required" t-att-pattern="pattern"
+                                    title="Only alphanumerical characters, underscore, hyphen and dot are allowed" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="neutralize_database_restore" class="col-md-4 col-form-label">Neutralize</label>
+                            <div class="col-md-8">
+                                <input id="neutralize_database_restore" type="checkbox" name="neutralize_database"
+                                    class="form-check-input" />
+                            </div>
+                        </div>
+                        <label for="radio_copy_true">This database might have been moved or copied.</label>
+                        <p class="form-text">
+                            In order to avoid conflicts between databases, Odoo needs to know if this database was moved
+                            or copied.<br />
+                            If you don't know, answer "This database is a copy".
+                        </p>
+                        <div class="form-check">
+                            <input id="radio_copy_true" name="copy" type="radio" class="form-check-input" value="true"
+                                checked="1" />
+                            <label for="radio_copy_true" class="form-check-label">This database is a copy</label>
+                        </div>
+                        <div class="form-check">
+                            <input id="radio_copy_false" name="copy" type="radio" class="form-check-input"
+                                value="false" />
+                            <label for="radio_copy_false" class="form-check-label">This database was moved</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Continue" class="btn btn-primary float-end" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Master password -->
+    <div class="modal fade o_database_master" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Set Master Password</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_change_pwd" role="form" action="/web/database/change_password" method="post">
+                    <div class="modal-body">
+                        <p>The master password is required to create, delete, dump or restore databases.</p>
+                        <t t-set="set_master_pwd" t-value="True" />
+                        <t t-call="master_input" />
+                        <div class="row mb-3">
+                            <label for="master_pwd_new" class="col-md-5 col-form-label">New Master Password</label>
+                            <div class="col-md-7">
+                                <div class="input-group">
+                                    <input id="master_pwd_new" type="password" name="master_pwd_new"
+                                        class="form-control" required="required" autocomplete="new-password" />
+                                    <span class="fa fa-eye o_little_eye input-group-text" aria-hidden="true"
+                                        style="cursor: pointer;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Continue" class="btn btn-primary float-end" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duplicate DB -->
+    <div class="modal fade o_database_duplicate" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Duplicate Database</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-duplicate-db" role="form" action="/web/database/duplicate" method="post">
+                    <div class="modal-body">
+                        <t t-set="set_master_pwd" t-value="False" />
+                        <t t-call="master_input" />
+                        <div class="row mb-3">
+                            <label for="dbname_duplicate" class="col-md-4 col-form-label">Database Name</label>
+                            <div class="col-md-8">
+                                <input id="dbname_duplicate" type="text" name="name" class="form-control"
+                                    required="required" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="new_name" class="col-md-4 col-form-label">New Name</label>
+                            <div class="col-md-8">
+                                <input id="new_name" type="text" name="new_name" class="form-control"
+                                    required="required" t-att-pattern="pattern"
+                                    title="Only alphanumerical characters, underscore, hyphen and dot are allowed" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="neutralize_database" class="col-md-4 col-form-label">Neutralize</label>
+                            <div class="col-md-8">
+                                <input id="neutralize_database" type="checkbox" name="neutralize_database"
+                                    class="form-check-input" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Continue" class="btn btn-primary float-end" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drop DB -->
+    <div class="modal fade o_database_delete" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Database</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_drop_db" role="form" action="/web/database/drop" method="post">
+                    <div class="modal-body">
+                        <t t-call="master_input" />
+                        <div class="row mb-3">
+                            <label for="dbname_delete" class="col-md-4 col-form-label">Database</label>
+                            <div class="col-md-8">
+                                <input id="dbname_delete" type="text" name="name" class="form-control"
+                                    required="required" readonly="readonly" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Delete" class="btn btn-primary float-end" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup DB -->
+    <div class="modal fade o_database_backup" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Backup Database</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_backup_db" role="form" action="/web/database/backup" method="post">
+                    <div class="modal-body">
+                        <t t-call="master_input" />
+                        <div class="row mb-3">
+                            <label for="dbname_backup" class="col-md-4 col-form-label">Database Name</label>
+                            <div class="col-md-8">
+                                <input id="dbname_backup" type="text" name="name" class="form-control"
+                                    required="required" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="backup_format" class="col-md-4 col-form-label">Backup Format</label>
+                            <div class="col-md-8">
+                                <select id="backup_format" name="backup_format" class="form-select" required="required">
+                                    <option value="zip">zip (includes filestore)</option>
+                                    <option value="dump">pg_dump custom format (without filestore)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Backup" class="btn btn-primary float-end" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

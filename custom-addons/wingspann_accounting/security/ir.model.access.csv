@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wingspann_accounting_dashboard,wingspann.accounting.dashboard access,model_wingspann_accounting_dashboard,account.group_account_invoice,1,1,1,1
+access_wingspann_general_ledger_wizard,wingspann.general.ledger.wizard access,model_wingspann_general_ledger_wizard,account.group_account_invoice,1,1,1,1
+access_wingspann_partner_ledger_wizard,wingspann.partner.ledger.wizard access,model_wingspann_partner_ledger_wizard,account.group_account_invoice,1,1,1,1

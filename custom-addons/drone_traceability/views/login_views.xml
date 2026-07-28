@@ -6,7 +6,7 @@
             <div class="custom-login-container container-fluid d-flex align-items-center justify-content-center min-vh-100">
                 <div class="custom-glass-box row w-100 no-gutters">
                     <!-- Left Column: Vision and Mission -->
-                    <div class="col-lg-7 left-panel d-flex flex-column justify-content-between p-5 text-white">
+                    <div class="col-lg-7 left-panel d-flex flex-column justify-content-start p-5 text-white">
                         <div class="logo-section mb-4">
                             <h2 class="company-name font-weight-bold">WINGSPANN GLOBAL</h2>
                         </div>
@@ -14,13 +14,13 @@
                             <div class="vision-box mb-4">
                                 <h4 class="section-title">Vision</h4>
                                 <p class="section-text">
-                                    At Wingspann Global, our vision is to redefine the future of aerospace by building intelligent, reliable, and high-performance autonomous aerial systems. We aim to drive innovation in drone technology by integrating advanced engineering, AI-driven autonomy, and modern avionics to create solutions that enhance efficiency, safety, and decision-making. Through continuous innovation and a strong focus on quality, we aspire to become a trusted partner across defense, industrial, and commercial sectors, enabling the next generation of mission-ready aviation.
+                                    To redefine aerospace by building intelligent, high-performance autonomous systems. We drive the future of drone technology, empowering defense and industry with the next generation of mission-ready aviation.
                                 </p>
                             </div>
                             <div class="mission-box">
                                 <h4 class="section-title">Mission</h4>
                                 <p class="section-text">
-                                    Our mission is to design, develop, and deliver cutting-edge unmanned aerial systems and drone-based solutions that address real-world operational challenges. We are committed to advancing next-generation UAV technologies that are scalable, cost-effective, and performance-driven, while supporting diverse applications such as surveillance, mapping, inspection, and data acquisition. By combining technical expertise, innovation, and a growing quality-driven approach, we strive to provide reliable and efficient solutions that empower industries with actionable aerial intelligence and long-term value.
+                                    To design and deliver cutting-edge unmanned aerial solutions that conquer real-world challenges. Through advanced engineering and AI-driven autonomy, we provide scalable, reliable, and actionable aerial intelligence.
                                 </p>
                             </div>
                         </div>
@@ -30,7 +30,7 @@
                     <div class="col-lg-5 right-panel d-flex align-items-center justify-content-center p-5">
                         <div class="login-card-wrapper w-100">
                             <div class="login-header text-center mb-4 text-white">
-                                <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo" class="company-logo mb-3"/>
+                                <img src="/drone_traceability/static/src/img/Icon.png" alt="Wingspann Logo" class="company-logo mb-3"/>
                                 <h3 class="font-weight-bold">Welcome!</h3>
                                 <p class="text-white-50 small">Please login to continue</p>
                             </div>
@@ -45,7 +45,7 @@
                 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap');
                 
                 /* Apply fonts */
-                * {
+                body, .custom-login-container, input, button {
                     font-family: 'Plus Jakarta Sans', sans-serif !important;
                 }
                 
@@ -87,8 +87,11 @@
                 }
                 
                 .company-logo {
-                    max-height: 120px;
+                    max-width: 80%;
+                    max-height: 90px;
                     width: auto;
+                    height: auto;
+                    object-fit: contain;
                     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
                 }
                 

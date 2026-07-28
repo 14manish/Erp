@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Purchase Order Form View -->
+    <record id="purchase_order_form_inherit_wingspann" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.wingspann</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Make Order Number editable -->
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+            <!-- Show Order Deadline (date_order) field -->
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+
+            <!-- Add Quotation Ref and Date next to Date Order -->
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="x_quotation_ref"/>
+                <field name="x_quotation_date"/>
+            </xpath>
+            
+            <!-- Add HSN/SAC Code to Order Lines tree -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                <field name="x_hsn_code" readonly="0" force_save="1"/>
+            </xpath>
+
+            <!-- Hide Expected Arrival (date_planned) field -->
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide UoM column in order lines list -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']" position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+
+            <!-- Hide UoM column in order lines list -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='date_planned']" position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+
+            <!-- Add Vendor Compare Button -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <button name="action_compare_vendors" type="object" icon="fa-balance-scale" title="Compare Vendors"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

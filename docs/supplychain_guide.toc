@@ -1,0 +1,6 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}Step 1: Checking Inventory}{2}{section.2}%
+\contentsline {section}{\numberline {3}Step 2: Creating a Purchase Order (PO)}{2}{section.3}%
+\contentsline {section}{\numberline {4}Step 3: Confirming and Printing the PO}{3}{section.4}%
+\contentsline {section}{\numberline {5}Step 4: Receiving the Goods}{5}{section.5}%
+\contentsline {section}{\numberline {6}Step 5: Creating the Vendor Bill for Finance}{6}{section.6}%

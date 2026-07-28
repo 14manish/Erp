@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form View -->
+    <record id="view_inventory_issue_note_form" model="ir.ui.view">
+        <field name="name">inventory.issue.note.form</field>
+        <field name="model">inventory.issue.note</field>
+        <field name="arch" type="xml">
+            <form string="Material Issue Note">
+                <header>
+                    <button name="action_submit" string="Submit for Approval" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve (Inventory Head)" type="object" class="oe_highlight" invisible="state != 'to_approve'" groups="stock.group_stock_manager"/>
+                    <button name="action_issue" string="Issue Items" type="object" class="oe_highlight" invisible="state != 'approved'" groups="stock.group_stock_user,stock.group_stock_manager"/>
+                    <button name="action_return" string="Handover &amp; Return to Inventory" type="object" class="oe_highlight" invisible="state != 'issued'"/>
+                    <button name="%(action_report_inventory_issue_note)d" string="Print Issue Note" type="action" class="btn-secondary" invisible="state in ('draft', 'cancel')"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('issued', 'returned', 'cancel')"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,approved,issued,returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Requisition No."/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="indented_by_id" readonly="state != 'draft'"/>
+                            <field name="issued_by_id" readonly="1" invisible="not issued_by_id"/>
+                            <field name="authorized_by_id" readonly="1" invisible="not authorized_by_id"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="for_use_at" placeholder="e.g. Flight Test Bench / Project Alpha" readonly="state in ('issued', 'returned', 'cancel')"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Item Lines" name="items">
+                            <field name="line_ids" readonly="state in ('returned', 'cancel')">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="purpose"/>
+                                    <field name="qty_required" readonly="parent.state not in ('draft', 'to_approve')"/>
+                                    <field name="qty_issued" readonly="parent.state not in ('approved', 'issued')"/>
+                                    <field name="qty_returned" readonly="parent.state != 'issued'"/>
+                                    <field name="product_uom_id" groups="uom.group_uom"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes &amp; Instructions" name="notes">
+                            <field name="notes" placeholder="Additional details or instructions..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_inventory_issue_note_tree" model="ir.ui.view">
+        <field name="name">inventory.issue.note.tree</field>
+        <field name="model">inventory.issue.note</field>
+        <field name="arch" type="xml">
+            <tree string="Material Issue Notes" decoration-info="state=='draft'" decoration-warning="state=='to_approve'" decoration-success="state in ('approved','issued','returned')">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="indented_by_id"/>
+                <field name="for_use_at"/>
+                <field name="authorized_by_id"/>
+                <field name="issued_by_id"/>
+                <field name="state" widget="badge" decoration-info="state=='draft'" decoration-warning="state=='to_approve'" decoration-success="state in ('issued','returned')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_inventory_issue_note_search" model="ir.ui.view">
+        <field name="name">inventory.issue.note.search</field>
+        <field name="model">inventory.issue.note</field>
+        <field name="arch" type="xml">
+            <search string="Search Material Issue Notes">
+                <field name="name"/>
+                <field name="indented_by_id"/>
+                <field name="for_use_at"/>
+                <field name="authorized_by_id"/>
+                <filter string="My Requisitions" name="my_issue_notes" domain="[('indented_by_id', '=', uid)]"/>
+                <filter string="To Approve" name="to_approve" domain="[('state', '=', 'to_approve')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Issued (In Use)" name="issued" domain="[('state', '=', 'issued')]"/>
+                <filter string="Returned (Done)" name="returned" domain="[('state', '=', 'returned')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Indented By" name="group_by_indented" context="{'group_by': 'indented_by_id'}"/>
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="group_by_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_inventory_issue_note" model="ir.actions.act_window">
+        <field name="name">Material Issue Notes</field>
+        <field name="res_model">inventory.issue.note</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_inventory_issue_note_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Material Issue Note!
+            </p>
+            <p>
+                Request items from inventory, obtain approval from Inventory Head, and manage item returns safely.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item under Inventory Operations -->
+    <menuitem id="menu_inventory_issue_note"
+              name="Material Issue Notes"
+              action="action_inventory_issue_note"
+              parent="stock.menu_stock_warehouse_mgmt"
+              sequence="15"/>
+
+</odoo>

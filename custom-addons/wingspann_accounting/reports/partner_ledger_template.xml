@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_partner_ledger" model="ir.actions.report">
+        <field name="name">Partner Ledger</field>
+        <field name="model">wingspann.partner.ledger.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">wingspann_accounting.report_partner_ledger</field>
+        <field name="report_file">wingspann_accounting.report_partner_ledger</field>
+        <field name="paperformat_id" ref="wingspann_accounting.paperformat_wingspann_ledger"/>
+        <field name="binding_model_id" ref="model_wingspann_partner_ledger_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_partner_ledger">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center mt-3 mb-4">Partner Ledger</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <strong>Date Filter:</strong> <span t-esc="data['date_from']"/> to <span t-esc="data['date_to']"/><br/>
+                            <strong>Target Moves:</strong> 
+                            <span t-if="data['target_move'] == 'posted'">All Posted Entries</span>
+                            <span t-if="data['target_move'] == 'all'">All Entries</span><br/>
+                            <strong>Partner Type:</strong>
+                            <span t-if="data['partner_type'] == 'all'">All Partners</span>
+                            <span t-if="data['partner_type'] == 'customer'">Customers Only</span>
+                            <span t-if="data['partner_type'] == 'supplier'">Vendors Only</span>
+                        </div>
+                    </div>
+
+                    <t t-foreach="partners" t-as="partner">
+                        <h4 class="mt-4"><span t-esc="partner.name"/></h4>
+                        <table class="table table-sm table-bordered mt-2">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>JRNL</th>
+                                    <th>Account</th>
+                                    <th>Reference</th>
+                                    <th>Label</th>
+                                    <th class="text-end">Debit</th>
+                                    <th class="text-end">Credit</th>
+                                    <th class="text-end">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="text-end fw-bold">Initial Balance</td>
+                                    <td colspan="2"></td>
+                                    <td class="text-end fw-bold">
+                                        <span t-esc="partner_value['initial_balance']" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <t t-set="current_balance" t-value="partner_value['initial_balance']"/>
+                                <tr t-foreach="partner_value['lines']" t-as="line">
+                                    <t t-set="current_balance" t-value="current_balance + line.debit - line.credit"/>
+                                    <td><span t-esc="line.date"/></td>
+                                    <td><span t-esc="line.journal_id.code"/></td>
+                                    <td><span t-esc="line.account_id.code"/></td>
+                                    <td><span t-esc="line.move_id.name"/></td>
+                                    <td><span t-esc="line.name"/></td>
+                                    <td class="text-end"><span t-esc="line.debit" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/></td>
+                                    <td class="text-end"><span t-esc="line.credit" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/></td>
+                                    <td class="text-end"><span t-esc="current_balance" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/></td>
+                                </tr>
+                                <tr class="fw-bold table-light">
+                                    <td colspan="5" class="text-end">Ending Balance</td>
+                                    <td class="text-end"><span t-esc="partner_value['debit']" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/></td>
+                                    <td class="text-end"><span t-esc="partner_value['credit']" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/></td>
+                                    <td class="text-end"><span t-esc="current_balance" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_ledger_wizard_form" model="ir.ui.view">
+        <field name="name">wingspann.partner.ledger.wizard.form</field>
+        <field name="model">wingspann.partner.ledger.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Partner Ledger Report">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="target_move" widget="radio"/>
+                        <field name="partner_type" widget="radio"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="partner_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Print PDF" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_partner_ledger_wizard" model="ir.actions.act_window">
+        <field name="name">Partner Ledger</field>
+        <field name="res_model">wingspann.partner.ledger.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_wingspann_partner_ledger" 
+              name="Partner Ledger" 
+              parent="menu_wingspann_accounting_reports" 
+              action="action_partner_ledger_wizard" 
+              sequence="2"/>
+</odoo>

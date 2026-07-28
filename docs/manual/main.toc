@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Abstract}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}System Overview}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Purchasing and Procurement}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Viewing RFQs and POs}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Creating a Purchase Order}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Printing the Official Purchase Order}{4}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Inventory and Stock Management}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Inventory Overview}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Managing Internal Transfers and Issue Notes}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Printing the Issue Note}{7}{subsection.3.3}%
+\contentsline {section}{\numberline {4}System Administration}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Managing User Roles}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Maintaining QWeb Templates}{8}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Docker Infrastructure}{8}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Database Backups}{8}{subsection.4.4}%

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_wingspann_accounting_root" 
+              name="Accounting" 
+              web_icon="account,static/description/icon.png"
+              sequence="25"
+              groups="account.group_account_invoice"/>
+
+    <!-- Dashboard Submenu -->
+    <menuitem id="menu_wingspann_accounting_dashboard" 
+              name="Dashboard" 
+              parent="menu_wingspann_accounting_root" 
+              action="action_wingspann_accounting_dashboard" 
+              sequence="1"/>
+
+    <!-- Journal Entries / Items -->
+    <menuitem id="menu_wingspann_accounting_journal_entries" 
+              name="Journal Entries" 
+              parent="menu_wingspann_accounting_root" 
+              sequence="2"/>
+              
+    <menuitem id="menu_wingspann_action_move_journal_line" 
+              name="Journal Entries" 
+              parent="menu_wingspann_accounting_journal_entries" 
+              action="account.action_move_journal_line" 
+              sequence="1"/>
+
+    <menuitem id="menu_wingspann_action_account_moves_all_a" 
+              name="Journal Items" 
+              parent="menu_wingspann_accounting_journal_entries" 
+              action="account.action_account_moves_all_a" 
+              sequence="2"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_wingspann_accounting_config" 
+              name="Configuration" 
+              parent="menu_wingspann_accounting_root" 
+              sequence="100"/>
+              
+    <menuitem id="menu_wingspann_action_account_form" 
+              name="Chart of Accounts" 
+              parent="menu_wingspann_accounting_config" 
+              action="account.action_account_form" 
+              sequence="1"/>
+
+    <menuitem id="menu_wingspann_action_account_journal_form" 
+              name="Journals" 
+              parent="menu_wingspann_accounting_config" 
+              action="account.action_account_journal_form" 
+              sequence="2"/>
+
+    <menuitem id="menu_wingspann_action_tax_form" 
+              name="Taxes" 
+              parent="menu_wingspann_accounting_config" 
+              action="account.action_tax_form" 
+              sequence="3"/>
+
+    <menuitem id="menu_wingspann_action_account_fiscal_position_form" 
+              name="Fiscal Positions" 
+              parent="menu_wingspann_accounting_config" 
+              action="account.action_account_fiscal_position_form" 
+              sequence="4"/>
+              
+
+              
+</odoo>

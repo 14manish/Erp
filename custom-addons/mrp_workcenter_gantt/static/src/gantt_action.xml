@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="mrp_workcenter_gantt.GanttView">
+    <div class="o_mrp_gantt_root" t-on-wheel="onWheel">
+
+      <!-- ══════════════════════════════ MACHINE MANAGER PANEL ══════════════ -->
+      <div class="o_gantt_manager_overlay" t-if="state.showManager" t-on-click="toggleManager"/>
+      <div class="o_gantt_manager_panel" t-att-class="state.showManager ? 'is-open' : ''">
+        <div class="o_gantt_manager_header">
+          <h6 class="mb-0"><i class="fa fa-cogs me-2"/>Manage Machines</h6>
+          <button class="btn-close" t-on-click="toggleManager"/>
+        </div>
+        <div class="o_gantt_manager_body">
+
+          <!-- List of all work centers -->
+          <p class="o_gantt_manager_section_title">Active Work Centers</p>
+          <div t-foreach="state.workcenters" t-as="wc" t-key="wc.id" class="o_gantt_wc_manage_row">
+            <div class="o_gantt_wc_manage_info">
+              <i class="fa fa-industry me-2 text-muted"/>
+              <span t-esc="wc.name"/>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <!-- Eye toggle (show/hide from chart) -->
+              <button class="btn btn-sm o_gantt_eye_btn"
+                      t-att-class="isWcVisible(wc.id) ? 'btn-outline-primary' : 'btn-outline-secondary'"
+                      t-att-title="isWcVisible(wc.id) ? 'Hide from chart' : 'Show on chart'"
+                      t-on-click="() => this.toggleWcVisibility(wc.id)">
+                <i t-att-class="'fa ' + (isWcVisible(wc.id) ? 'fa-eye' : 'fa-eye-slash')"/>
+              </button>
+              <!-- Remove (deactivate) -->
+              <button class="btn btn-sm btn-outline-danger"
+                      title="Deactivate this machine"
+                      t-on-click="() => this.deactivateMachine(wc.id, wc.name)">
+                <i class="fa fa-trash-o"/>
+              </button>
+            </div>
+          </div>
+
+          <!-- Add new machine -->
+          <hr class="my-3"/>
+          <p class="o_gantt_manager_section_title">Add New Machine</p>
+          <div class="input-group">
+            <input type="text"
+                   class="form-control form-control-sm"
+                   placeholder="Machine name…"
+                   t-att-value="state.newMachineName"
+                   t-on-input="onNewMachineInput"
+                   t-on-keydown="onNewMachineKeydown"/>
+            <button class="btn btn-sm btn-primary" t-on-click="addNewMachine">
+              <i class="fa fa-plus"/> Add
+            </button>
+          </div>
+
+          <!-- Toggle free slots -->
+          <hr class="my-3"/>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="toggleFreeSlots"
+                   t-att-checked="state.showFreeSlots"
+                   t-on-change="() => (this.state.showFreeSlots = !this.state.showFreeSlots)"/>
+            <label class="form-check-label small" for="toggleFreeSlots">
+              Highlight free time slots
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ TOOLBAR ════════════════════ -->
+      <div class="o_gantt_toolbar">
+        <div class="o_gantt_toolbar_left">
+          <button class="btn btn-sm btn-outline-secondary fw-semibold" t-on-click="onToday">Today</button>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="onPrev">
+              <i class="fa fa-chevron-left"/>
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="onNext">
+              <i class="fa fa-chevron-right"/>
+            </button>
+          </div>
+          <span class="o_gantt_range_label" t-esc="rangeLabel"/>
+        </div>
+        <div class="o_gantt_toolbar_right">
+          <div class="btn-group me-2">
+            <button class="btn btn-sm" t-att-class="state.zoom==='day'   ? 'btn-primary' : 'btn-outline-secondary'" t-on-click="() => this.onZoom('day')">Day</button>
+            <button class="btn btn-sm" t-att-class="state.zoom==='week'  ? 'btn-primary' : 'btn-outline-secondary'" t-on-click="() => this.onZoom('week')">Week</button>
+            <button class="btn btn-sm" t-att-class="state.zoom==='month' ? 'btn-primary' : 'btn-outline-secondary'" t-on-click="() => this.onZoom('month')">Month</button>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary" t-on-click="_loadData" title="Refresh">
+            <i class="fa fa-refresh"/>
+          </button>
+          <button class="btn btn-sm btn-primary ms-2" t-on-click="onCreateJob">
+            <i class="fa fa-plus me-1"/>Create Job
+          </button>
+          <button class="btn btn-sm btn-outline-primary ms-2 o_gantt_manage_btn" t-on-click="toggleManager">
+            <i class="fa fa-cogs me-1"/>Manage Machines
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ LOADING ════════════════════ -->
+      <div t-if="state.loading" class="o_gantt_loading">
+        <div class="spinner-border text-primary"/><span class="ms-3 text-muted">Loading schedule…</span>
+      </div>
+
+      <!-- ══════════════════════════════════════ CHART ══════════════════════ -->
+      <div t-else="" class="o_gantt_chart_wrapper">
+        <div t-if="!visibleWorkcenters.length" class="o_gantt_empty">
+          <i class="fa fa-calendar-o fa-4x text-muted mb-3"/>
+          <h4 class="text-muted">No Machines Visible</h4>
+          <p class="text-muted">Open <strong>Manage Machines</strong> to add or show machines.</p>
+        </div>
+
+        <div t-else="" class="o_gantt_layout">
+
+          <!-- ── Fixed WC label column ──────────────────────────────────── -->
+          <div class="o_gantt_wc_column">
+            <div class="o_gantt_wc_header">
+              <span>Work Center</span>
+            </div>
+            <div t-foreach="visibleWorkcenters" t-as="wc" t-key="wc.id" class="o_gantt_wc_label">
+              <div class="o_gantt_wc_label_top">
+                <i class="fa fa-cog me-1 text-muted"/>
+                <span class="fw-semibold" t-esc="wc.name"/>
+              </div>
+              <div class="o_gantt_wc_stats" t-esc="getWcStats(wc.id)"/>
+            </div>
+          </div>
+
+          <!-- ── Scrollable timeline ────────────────────────────────────── -->
+          <div class="o_gantt_timeline_wrapper">
+
+            <!-- Header row -->
+            <div class="o_gantt_header_row" t-att-style="'min-width:' + totalWidth + 'px'">
+              <div t-foreach="headerDays" t-as="day" t-key="day_index"
+                   class="o_gantt_day_header"
+                   t-att-class="isToday(day) ? 'o_gantt_today_col' : ''"
+                   style="width:640px">
+                <span t-esc="formatDayHeader(day)"/>
+              </div>
+            </div>
+
+            <!-- Rows -->
+            <div class="o_gantt_rows_outer" t-att-style="'min-width:' + totalWidth + 'px'">
+              <div class="o_gantt_today_line" t-att-style="todayLineStyle"/>
+
+              <div t-foreach="visibleWorkcenters" t-as="wc" t-key="wc.id"
+                   class="o_gantt_row"
+                   t-on-dragover="(ev) => this.onDragOver(ev)"
+                   t-on-drop="(ev) => this.onDrop(ev, wc.id)">
+
+                <!-- Day background stripes -->
+                <div t-foreach="headerDays" t-as="day" t-key="day_index"
+                     class="o_gantt_day_stripe"
+                     t-att-class="isToday(day) ? 'o_gantt_today_stripe' : (day_index % 2 === 1 ? 'o_gantt_alt_stripe' : '')"
+                     t-att-style="computeDayStripeStyle(day_index)"/>
+
+                <!-- FREE TIME slots (green) -->
+                <div t-foreach="getFreeSlots(wc.id)" t-as="slot" t-key="slot_index"
+                     class="o_gantt_free_slot"
+                     t-att-style="slot.style"
+                     title="Machine available"/>
+
+                <!-- Work order pills -->
+                <div t-foreach="getWorkordersForWC(wc.id)" t-as="wo" t-key="wo.id"
+                     class="o_gantt_pill"
+                     t-att-style="computePillStyle(wo)"
+                     t-att-title="getTooltip(wo)"
+                     draggable="true"
+                     t-on-dragstart="(ev) => this.onDragStart(ev, wo.id)"
+                     t-on-dragend="(ev) => this.onDragEnd(ev)"
+                     t-on-dblclick="() => this.onEditWo(wo)">
+                  <!-- Top line: work order name -->
+                  <div class="o_gantt_pill_top">
+                    <span class="o_gantt_pill_name" t-esc="wo.name"/>
+                    <span class="o_gantt_pill_state_badge" t-esc="getStateLabel(wo.state)"/>
+                  </div>
+                  <!-- Bottom line: MO ref + responsible person -->
+                  <div class="o_gantt_pill_bottom">
+                    <i class="fa fa-file-text-o me-1"/>
+                    <span t-esc="wo._moRef"/>
+                    <i class="fa fa-user-o ms-2 me-1"/>
+                    <span t-esc="wo._userName"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════ EDIT JOB MODAL ═══════════════════════ -->
+      <div t-if="state.showEditModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(3px);">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content shadow-lg border-0" style="border-radius: 12px;">
+            <div class="modal-header bg-light py-3" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+              <h5 class="modal-title fw-bold text-dark"><i class="fa fa-edit me-2 text-primary"/>Edit Job Details</h5>
+              <button type="button" class="btn-close" t-on-click="closeEditModal"></button>
+            </div>
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">Operation Name</label>
+                <input type="text" class="form-control bg-light" t-att-value="state.editingWo.name" readonly="1"/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">Assigned Machine</label>
+                <select class="form-select" t-model="state.editingWo.workcenter_id">
+                  <option t-foreach="state.workcenters" t-as="wc" t-key="wc.id" t-att-value="wc.id" t-esc="wc.name"/>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">Assigned Operator (Employee)</label>
+                <select class="form-select" t-model="state.editingWo.user_id">
+                  <option value="">Unassigned</option>
+                  <option t-foreach="state.users" t-as="usr" t-key="usr.id" t-att-value="usr.id" t-esc="usr.name"/>
+                </select>
+              </div>
+
+              <div class="row">
+                <div class="col-6 mb-3">
+                  <label class="form-label small fw-bold text-muted text-uppercase">Expected Duration (Hours)</label>
+                  <input type="number" class="form-control" t-model="state.editingWo.duration_expected" min="0.1" step="0.1"/>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label small fw-bold text-muted text-uppercase">Status</label>
+                  <select class="form-select" t-model="state.editingWo.state">
+                    <option value="pending">Pending (Waiting for another WO)</option>
+                    <option value="waiting">Waiting for components</option>
+                    <option value="ready">Ready</option>
+                    <option value="progress">In Progress</option>
+                    <option value="done">Finished (Done)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">Start Date &amp; Time</label>
+                <input type="datetime-local" class="form-control" t-model="state.editingWo.date_start"/>
+              </div>
+            </div>
+            <div class="modal-footer bg-light py-3 d-flex align-items-center justify-content-between" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+              <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" t-on-click="deleteJob">
+                <i class="fa fa-trash-o me-1"/>Delete Job
+              </button>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-bold" t-on-click="closeEditModal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm px-4 fw-bold" t-on-click="saveEdit"><i class="fa fa-save me-1"/>Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ LEGEND ═════════════════════ -->
+      <div class="o_gantt_legend">
+        <span class="o_gantt_legend_title">Status:</span>
+        <t t-foreach="legendItems" t-as="item" t-key="item.label">
+          <span class="o_gantt_legend_item">
+            <span class="o_gantt_legend_dot"
+                  t-att-style="'background:' + item.color + (item.border ? ';border:1px solid #86efac' : '')"/>
+            <span t-esc="item.label"/>
+          </span>
+        </t>
+        <span class="ms-auto text-muted small fst-italic">
+          Drag pills to reschedule · Manage Machines to add/remove
+        </span>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

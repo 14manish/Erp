@@ -20,6 +20,7 @@ services:
     volumes:
       - odoo-web-data:/var/lib/odoo
       - ./custom-addons:/mnt/extra-addons
+      - ./database_manager.qweb.html:/usr/lib/python3/dist-packages/odoo/addons/web/static/src/public/database_manager.qweb.html
       - ./oca-addons:/mnt/oca-addons
       - ./oca-addons/odoo.conf:/etc/odoo/odoo.conf
     environment:

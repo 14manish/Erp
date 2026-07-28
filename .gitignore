@@ -16,3 +16,6 @@ webclient_templates.xml
 # IDE settings
 .vscode/
 .idea/
+
+# Others
+.dbpassword

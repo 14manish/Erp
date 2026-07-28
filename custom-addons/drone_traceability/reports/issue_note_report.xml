@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_inventory_issue_note" model="ir.actions.report">
+        <field name="name">Material Issue Note</field>
+        <field name="model">inventory.issue.note</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">drone_traceability.report_issue_note_document</field>
+        <field name="report_file">drone_traceability.report_issue_note_document</field>
+        <field name="print_report_name">'Issue_Note_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_inventory_issue_note"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- QWeb Template Document -->
+    <template id="report_issue_note_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: 'Plus Jakarta Sans', sans-serif; color: #000; padding: 25px 20px;">
+                        <style>
+                            .issue-logo-container {
+                                text-align: center;
+                                margin-bottom: 10px;
+                            }
+                            .issue-title-container {
+                                text-align: center;
+                                margin-bottom: 25px;
+                            }
+                            .company-name {
+                                font-size: 20px;
+                                font-weight: bold;
+                                text-transform: uppercase;
+                                margin-bottom: 4px;
+                            }
+                            .doc-title {
+                                font-size: 22px;
+                                font-weight: bold;
+                                text-decoration: underline;
+                                letter-spacing: 1px;
+                            }
+                            .meta-table {
+                                width: 100%;
+                                margin-bottom: 20px;
+                                font-size: 13px;
+                            }
+                            .meta-table td {
+                                padding: 4px 8px;
+                                vertical-align: top;
+                            }
+                            .item-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-bottom: 30px;
+                                font-size: 12px;
+                            }
+                            .item-table th, .item-table td {
+                                border: 1px solid #000 !important;
+                                padding: 8px 6px;
+                                text-align: center;
+                                vertical-align: middle;
+                            }
+                            .item-table th {
+                                background-color: #f8f9fa;
+                                font-weight: bold;
+                            }
+                            .signature-container {
+                                width: 100%;
+                                margin-top: 50px;
+                                font-size: 13px;
+                                font-weight: bold;
+                            }
+                            .signature-box {
+                                text-align: center;
+                                border-top: 1px solid #000;
+                                padding-top: 6px;
+                            }
+                        </style>
+
+                        <!-- Company Logo -->
+                        <div class="issue-logo-container">
+                            <img src="/drone_traceability/static/src/img/Icon.png" style="max-height: 80px;" alt="Logo"/>
+                        </div>
+
+                        <!-- Document Header Title -->
+                        <div class="issue-title-container">
+                            <div class="company-name"><span t-field="o.company_id.name"/></div>
+                            <div class="doc-title">ISSUE NOTE</div>
+                        </div>
+
+                        <!-- Metadata Info Section -->
+                        <table class="meta-table">
+                            <tr>
+                                <td style="width: 50%;">
+                                    <strong>Indented By: </strong> <span t-field="o.indented_by_id.name"/><br/>
+                                    <strong>Issued By: </strong> <span t-field="o.issued_by_id.name"/><br/>
+                                    <strong>For Use At: </strong> <span t-field="o.for_use_at"/>
+                                </td>
+                                <td style="width: 50%; text-align: right;">
+                                    <strong>Requisition: </strong> <span t-field="o.name"/><br/>
+                                    <strong>Date: </strong> <span t-field="o.date" t-options='{"widget": "date", "format": "dd/MM/yyyy"}'/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Items Table -->
+                        <table class="item-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 6%;">Sr. No.</th>
+                                    <th style="width: 34%;">Item Description</th>
+                                    <th style="width: 24%;">Purpose</th>
+                                    <th style="width: 12%;">Quantity Required</th>
+                                    <th style="width: 12%;">Quantity Issued</th>
+                                    <th style="width: 12%;">Quantity Returned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="sr_no" t-value="1"/>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td><span t-esc="sr_no"/></td>
+                                        <td style="text-align: left;"><span t-field="line.description"/></td>
+                                        <td style="text-align: left;"><span t-field="line.purpose"/></td>
+                                        <td>
+                                            <span t-field="line.qty_required"/>
+                                            <span t-field="line.product_uom_id.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.qty_issued"/>
+                                            <span t-field="line.product_uom_id.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.qty_returned"/>
+                                            <span t-field="line.product_uom_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="sr_no" t-value="sr_no + 1"/>
+                                </t>
+                                <!-- Fill empty rows if less than 5 rows for clean printable form -->
+                                <t t-if="len(o.line_ids) &lt; 5">
+                                    <t t-foreach="range(5 - len(o.line_ids))" t-as="empty_row">
+                                        <tr style="height: 35px;">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Notes if present -->
+                        <t t-if="o.notes">
+                            <div style="font-size: 12px; margin-bottom: 20px;">
+                                <strong>Notes / Instructions:</strong>
+                                <div t-field="o.notes"/>
+                            </div>
+                        </t>
+
+                        <!-- Signatures Row -->
+                        <div class="signature-container">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 25%; padding: 0 10px;">
+                                        <div class="signature-box">Indented By</div>
+                                        <div style="text-align: center; font-size: 11px; color: #555; margin-top: 3px;">
+                                            <span t-field="o.indented_by_id.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; padding: 0 10px;">
+                                        <div class="signature-box">Authorized By</div>
+                                        <div style="text-align: center; font-size: 11px; color: #555; margin-top: 3px;">
+                                            <span t-field="o.authorized_by_id.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; padding: 0 10px;">
+                                        <div class="signature-box">Issued By</div>
+                                        <div style="text-align: center; font-size: 11px; color: #555; margin-top: 3px;">
+                                            <span t-field="o.issued_by_id.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; padding: 0 10px;">
+                                        <div class="signature-box">Received By</div>
+                                        <div style="text-align: center; font-size: 11px; color: #555; margin-top: 3px;">
+                                            &amp;nbsp;
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

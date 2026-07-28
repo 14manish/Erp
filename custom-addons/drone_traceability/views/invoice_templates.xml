@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_wingspann" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit" priority="999">
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+            <div class="article" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id" style="font-family: 'Arial', sans-serif; color: #000; padding: 0;">
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1px solid black;">
+                    <!-- HEADER -->
+                    <tr>
+                        <td colspan="2" style="text-align: center; border-bottom: 1px solid black; padding: 10px; position: relative;">
+                            <strong style="font-size: 16px;">Tax Invoice</strong><br/><br/>
+                            <strong style="font-size: 14px; text-transform: uppercase;"><span t-field="o.company_id.name"/></strong><br/>
+                            <span t-if="o.company_id.company_registry">CIN: <span t-field="o.company_id.company_registry"/></span><br/>
+                            <span t-if="o.company_id.vat">PAN: <span t-esc="o.company_id.vat[2:12]" t-if="len(o.company_id.vat) &gt;= 12"/></span><br/>
+                            <span t-field="o.company_id.street"/><t t-if="o.company_id.street2">, <span t-field="o.company_id.street2"/></t>, 
+                            <span t-field="o.company_id.city"/>-<span t-field="o.company_id.zip"/><br/>
+                            E-mail: <span t-field="o.company_id.email"/><br/>
+                            PH: <span t-field="o.company_id.phone"/>
+
+                            <!-- QR Code Placeholder (Rendered if e-invoice fields exist) -->
+                            <t t-if="'l10n_in_edi_show_qr' in o and o.l10n_in_edi_show_qr">
+                                <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=100&amp;height=100' % o.l10n_in_edi_qrcode" style="position: absolute; right: 10px; top: 10px; max-height: 100px;"/>
+                            </t>
+                        </td>
+                    </tr>
+
+                    <!-- IRN / Ack Info -->
+                    <tr>
+                        <td colspan="2" style="border-bottom: 1px solid black; padding: 4px 8px;">
+                            <table style="width: 100%; font-size: 11px;">
+                                <tr>
+                                    <td style="width: 15%;"><strong>IRN</strong></td>
+                                    <td><span t-esc="o.l10n_in_edi_irn if 'l10n_in_edi_irn' in o else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ack No</strong></td>
+                                    <td><span t-esc="o.l10n_in_edi_ack_no if 'l10n_in_edi_ack_no' in o else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ack Date</strong></td>
+                                    <td><span t-esc="o.l10n_in_edi_ack_date if 'l10n_in_edi_ack_date' in o else ''"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Party Details -->
+                    <tr>
+                        <!-- Supplier Details -->
+                        <td style="width: 50%; border-right: 1px solid black; border-bottom: 1px solid black; vertical-align: top; padding: 0;">
+                            <div style="background-color: #d3d3d3; padding: 4px 8px; border-bottom: 1px solid black;"><strong>Details of Supplier (Bill From)</strong></div>
+                            <table style="width: 100%; padding: 4px 8px; margin: 4px;">
+                                <tr><td style="width: 35%;"><strong>GSTIN</strong></td><td><span t-field="o.company_id.vat"/></td></tr>
+                                <tr><td><strong>Name</strong></td><td><span t-field="o.company_id.name"/></td></tr>
+                                <tr><td style="vertical-align: top;"><strong>Address</strong></td><td><span t-field="o.company_id.street"/><br/><span t-field="o.company_id.city"/></td></tr>
+                                <tr><td><strong>PIN Code</strong></td><td><span t-field="o.company_id.zip"/></td></tr>
+                                <tr><td><strong>Email</strong></td><td><span t-field="o.company_id.email"/></td></tr>
+                                <tr><td><strong>Phone Number</strong></td><td><span t-field="o.company_id.phone"/></td></tr>
+                                <tr><td><strong>Invoice Number</strong></td><td><span t-field="o.name"/></td></tr>
+                            </table>
+                        </td>
+                        <!-- Invoice Meta -->
+                        <td style="width: 50%; border-bottom: 1px solid black; vertical-align: top; padding: 0;">
+                            <table style="width: 100%; padding: 4px 8px; margin: 4px; margin-top: 28px;">
+                                <tr><td style="width: 40%;"><strong>Nature of Document</strong></td><td>INV</td></tr>
+                                <tr><td><strong>Invoice Date</strong></td><td><span t-field="o.invoice_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td></tr>
+                                <tr><td><strong>PO Date</strong></td><td></td></tr>
+                                <tr><td><strong>PO Number</strong></td><td><span t-field="o.invoice_origin"/></td></tr>
+                                <tr><td><strong>Reference</strong></td><td><span t-field="o.ref"/></td></tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <!-- Receiver Details -->
+                        <td style="width: 50%; border-right: 1px solid black; border-bottom: 1px solid black; vertical-align: top; padding: 0;">
+                            <div style="background-color: #d3d3d3; padding: 4px 8px; border-bottom: 1px solid black;"><strong>Details of Receiver (Bill to)</strong></div>
+                            <table style="width: 100%; padding: 4px 8px; margin: 4px;">
+                                <tr><td style="width: 35%;"><strong>GSTIN/Unique ID</strong></td><td><span t-field="o.partner_id.vat"/></td></tr>
+                                <tr><td><strong>Name</strong></td><td><span t-field="o.partner_id.name"/></td></tr>
+                                <tr><td style="vertical-align: top;"><strong>Address</strong></td><td><span t-field="o.partner_id.street"/><br/><span t-field="o.partner_id.city"/></td></tr>
+                                <tr><td><strong>PIN Code</strong></td><td><span t-field="o.partner_id.zip"/></td></tr>
+                                <tr><td><strong>Email</strong></td><td><span t-field="o.partner_id.email"/></td></tr>
+                                <tr><td><strong>Phone Number</strong></td><td><span t-field="o.partner_id.phone"/></td></tr>
+                                <tr><td><strong>State</strong></td><td><span t-field="o.partner_id.state_id.name"/></td></tr>
+                                <tr><td><strong>State Code</strong></td><td><span t-esc="o.partner_id.state_id.l10n_in_tin if 'l10n_in_tin' in o.partner_id.state_id else ''"/></td></tr>
+                                <tr><td><strong>Place of Supply</strong></td><td><span t-esc="o.partner_shipping_id.state_id.l10n_in_tin if 'l10n_in_tin' in o.partner_shipping_id.state_id else (o.partner_id.state_id.l10n_in_tin if 'l10n_in_tin' in o.partner_id.state_id else '')"/></td></tr>
+                                <tr><td><strong>Place of Supply Name</strong></td><td><span t-field="o.partner_shipping_id.state_id.name"/></td></tr>
+                            </table>
+                        </td>
+                        <!-- Shipping Details -->
+                        <td style="width: 50%; border-bottom: 1px solid black; vertical-align: top; padding: 0;">
+                            <div style="background-color: #d3d3d3; padding: 4px 8px; border-bottom: 1px solid black;"><strong>Details of Receiver (Shipped to)</strong></div>
+                            <table style="width: 100%; padding: 4px 8px; margin: 4px;">
+                                <tr><td style="width: 40%;"><strong>GSTIN/Unique ID</strong></td><td><span t-field="o.partner_shipping_id.vat"/></td></tr>
+                                <tr><td><strong>Name</strong></td><td><span t-field="o.partner_shipping_id.name"/></td></tr>
+                                <tr><td style="vertical-align: top;"><strong>Address</strong></td><td><span t-field="o.partner_shipping_id.street"/><br/><span t-field="o.partner_shipping_id.city"/></td></tr>
+                                <tr><td><strong>PIN Code</strong></td><td><span t-field="o.partner_shipping_id.zip"/></td></tr>
+                                <tr><td><strong>State</strong></td><td><span t-field="o.partner_shipping_id.state_id.name"/></td></tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Product Table -->
+                    <tr>
+                        <td colspan="2" style="padding: 0; border-bottom: 1px solid black;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: right;">
+                                <thead>
+                                    <tr style="background-color: #d3d3d3; border-bottom: 1px solid black; text-align: center;">
+                                        <th style="border-right: 1px solid black; padding: 4px; text-align: left;">Products</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">Model</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">HSN Code</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">Unit Price</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">Taxable Amount</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">CGST Rate</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">CGST Amount</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">SGST Rate</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">SGST Amount</th>
+                                        <th style="border-right: 1px solid black; padding: 4px;">IGST Rate</th>
+                                        <th style="padding: 4px;">IGST Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="total_taxable" t-value="0.0"/>
+                                    <t t-set="total_cgst" t-value="0.0"/>
+                                    <t t-set="total_sgst" t-value="0.0"/>
+                                    <t t-set="total_igst" t-value="0.0"/>
+                                    
+                                    <t t-foreach="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')" t-as="line">
+                                        <!-- Basic Tax Inference -->
+                                        <t t-set="has_igst" t-value="any('IGST' in t.name for t in line.tax_ids)"/>
+                                        <t t-set="tax_rate" t-value="sum(t.amount for t in line.tax_ids)"/>
+                                        <t t-set="tax_amt" t-value="line.price_total - line.price_subtotal"/>
+                                        
+                                        <t t-set="cgst_rate" t-value="0"/>
+                                        <t t-set="sgst_rate" t-value="0"/>
+                                        <t t-set="igst_rate" t-value="0"/>
+                                        
+                                        <t t-set="cgst_amt" t-value="0"/>
+                                        <t t-set="sgst_amt" t-value="0"/>
+                                        <t t-set="igst_amt" t-value="0"/>
+                                        
+                                        <t t-if="has_igst">
+                                            <t t-set="igst_rate" t-value="tax_rate"/>
+                                            <t t-set="igst_amt" t-value="tax_amt"/>
+                                        </t>
+                                        <t t-elif="tax_rate &gt; 0">
+                                            <t t-set="cgst_rate" t-value="tax_rate / 2"/>
+                                            <t t-set="sgst_rate" t-value="tax_rate / 2"/>
+                                            <t t-set="cgst_amt" t-value="tax_amt / 2"/>
+                                            <t t-set="sgst_amt" t-value="tax_amt / 2"/>
+                                        </t>
+
+                                        <tr>
+                                            <td style="border-right: 1px solid black; padding: 4px; text-align: left;"><span t-field="line.name"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px; text-align: center;"><span t-field="line.product_id.default_code"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px; text-align: center;"><span t-esc="line.product_id.l10n_in_hsn_code or line.product_id.barcode or ''"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-field="line.price_unit" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-field="line.price_subtotal" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % cgst_rate"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % cgst_amt"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % sgst_rate"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % sgst_amt"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % igst_rate"/></td>
+                                            <td style="padding: 4px;"><span t-esc="'%.2f' % igst_amt"/></td>
+                                        </tr>
+
+                                        <t t-set="total_taxable" t-value="total_taxable + line.price_subtotal"/>
+                                        <t t-set="total_cgst" t-value="total_cgst + cgst_amt"/>
+                                        <t t-set="total_sgst" t-value="total_sgst + sgst_amt"/>
+                                        <t t-set="total_igst" t-value="total_igst + igst_amt"/>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="border-top: 1px solid black; font-weight: bold; background-color: #f5f5f5;">
+                                        <td colspan="4" style="border-right: 1px solid black; padding: 4px; text-align: left;">Total</td>
+                                        <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="total_taxable" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        <td style="border-right: 1px solid black; padding: 4px;"></td>
+                                        <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="total_cgst" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        <td style="border-right: 1px solid black; padding: 4px;"></td>
+                                        <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="total_sgst" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        <td style="border-right: 1px solid black; padding: 4px;"></td>
+                                        <td style="padding: 4px;"><span t-esc="total_igst" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- HSN Summary Table -->
+                    <t t-set="hsn_summary" t-value="o._l10n_in_get_hsn_summary_table()"/>
+                    <t t-if="hsn_summary">
+                        <tr>
+                            <td colspan="2" style="padding: 0; padding-top: 10px;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: right;">
+                                    <thead>
+                                        <tr style="background-color: #d3d3d3; border-bottom: 1px solid black; border-top: 1px solid black; text-align: center;">
+                                            <th style="border-right: 1px solid black; padding: 4px; text-align: left;">HSN</th>
+                                            <th style="border-right: 1px solid black; padding: 4px;">Taxable Amount</th>
+                                            <th style="border-right: 1px solid black; padding: 4px;">CGST Rate</th>
+                                            <th style="border-right: 1px solid black; padding: 4px;">CGST Amount</th>
+                                            <th style="border-right: 1px solid black; padding: 4px;">SGST Rate</th>
+                                            <th style="border-right: 1px solid black; padding: 4px;">SGST Amount</th>
+                                            <th style="border-right: 1px solid black; padding: 4px;">IGST Rate</th>
+                                            <th style="padding: 4px;">IGST Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="hsn_tot_taxable" t-value="0.0"/>
+                                        <t t-set="hsn_tot_cgst" t-value="0.0"/>
+                                        <t t-set="hsn_tot_sgst" t-value="0.0"/>
+                                        <t t-set="hsn_tot_igst" t-value="0.0"/>
+
+                                        <tr t-foreach="hsn_summary['items']" t-as="item">
+                                            <t t-set="tax_rate" t-value="item.get('rate', 0.0)"/>
+                                            <t t-set="has_igst" t-value="item.get('tax_amount_igst', 0) > 0"/>
+                                            
+                                            <t t-set="cgst_rate" t-value="tax_rate / 2 if tax_rate &gt; 0 and not has_igst else 0.0"/>
+                                            <t t-set="sgst_rate" t-value="tax_rate / 2 if tax_rate &gt; 0 and not has_igst else 0.0"/>
+                                            <t t-set="igst_rate" t-value="tax_rate if has_igst else 0.0"/>
+
+                                            <td style="border-right: 1px solid black; padding: 4px; text-align: left;"><span t-esc="item.get('l10n_in_hsn_code', '')"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="item.get('amount_untaxed', 0.0)" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % cgst_rate"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="item.get('tax_amount_cgst', 0.0)" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % sgst_rate"/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="item.get('tax_amount_sgst', 0.0)" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="'%.2f' % igst_rate"/></td>
+                                            <td style="padding: 4px;"><span t-esc="item.get('tax_amount_igst', 0.0)" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            
+                                            <t t-set="hsn_tot_taxable" t-value="hsn_tot_taxable + item.get('amount_untaxed', 0.0)"/>
+                                            <t t-set="hsn_tot_cgst" t-value="hsn_tot_cgst + item.get('tax_amount_cgst', 0.0)"/>
+                                            <t t-set="hsn_tot_sgst" t-value="hsn_tot_sgst + item.get('tax_amount_sgst', 0.0)"/>
+                                            <t t-set="hsn_tot_igst" t-value="hsn_tot_igst + item.get('tax_amount_igst', 0.0)"/>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="border-top: 1px solid black; font-weight: bold; background-color: #f5f5f5;">
+                                            <td style="border-right: 1px solid black; padding: 4px; text-align: left;">Total</td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="hsn_tot_taxable" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="hsn_tot_cgst" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"><span t-esc="hsn_tot_sgst" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td style="border-right: 1px solid black; padding: 4px;"></td>
+                                            <td style="padding: 4px;"><span t-esc="hsn_tot_igst" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </td>
+                        </tr>
+                    </t>
+
+                </table>
+            </div>
+        </xpath>
+    </template>
+</odoo>
