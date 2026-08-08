@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root QMS Application Menu -->
+    <menuitem id="menu_qms_root"
+              name="Quality Management"
+              sequence="45"
+              web_icon="wingspann_qms,static/src/img/icon.png"
+              groups="quality_control_oca.group_quality_control_user"/>
+
+    <!-- NCR -->
+    <menuitem id="menu_qms_ncr_parent"
+              name="Non-Conformance"
+              parent="menu_qms_root"
+              sequence="10"/>
+    <menuitem id="menu_qms_ncr"
+              name="NCR List"
+              parent="menu_qms_ncr_parent"
+              action="action_qms_ncr"
+              sequence="10"/>
+
+    <!-- CAPA -->
+    <menuitem id="menu_qms_capa_parent"
+              name="CAPA"
+              parent="menu_qms_root"
+              sequence="20"/>
+    <menuitem id="menu_qms_capa"
+              name="CAPA List"
+              parent="menu_qms_capa_parent"
+              action="action_qms_capa"
+              sequence="10"/>
+
+    <!-- Documents -->
+    <menuitem id="menu_qms_documents_parent"
+              name="Documents"
+              parent="menu_qms_root"
+              sequence="30"/>
+    <menuitem id="menu_qms_sop"
+              name="SOPs &amp; Work Instructions"
+              parent="menu_qms_documents_parent"
+              action="action_qms_sop"
+              sequence="10"/>
+
+    <!-- Equipment -->
+    <menuitem id="menu_qms_equipment_parent"
+              name="Equipment"
+              parent="menu_qms_root"
+              sequence="40"/>
+    <menuitem id="menu_qms_calibration"
+              name="Calibration Register"
+              parent="menu_qms_equipment_parent"
+              action="action_qms_calibration"
+              sequence="10"/>
+
+    <!-- Audits -->
+    <menuitem id="menu_qms_audit_parent"
+              name="Audits"
+              parent="menu_qms_root"
+              sequence="50"/>
+    <menuitem id="menu_qms_audit"
+              name="Audit List"
+              parent="menu_qms_audit_parent"
+              action="action_qms_audit"
+              sequence="10"/>
+
+    <!-- Complaints -->
+    <menuitem id="menu_qms_complaints_parent"
+              name="Complaints"
+              parent="menu_qms_root"
+              sequence="60"/>
+    <menuitem id="menu_qms_complaint"
+              name="Customer Complaints"
+              parent="menu_qms_complaints_parent"
+              action="action_qms_complaint"
+              sequence="10"/>
+</odoo>

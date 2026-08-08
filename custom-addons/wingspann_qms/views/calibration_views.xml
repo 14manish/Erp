@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Calibration Form View -->
+    <record id="view_qms_calibration_form" model="ir.ui.view">
+        <field name="name">qms.calibration.form</field>
+        <field name="model">qms.calibration</field>
+        <field name="arch" type="xml">
+            <form string="Equipment Calibration">
+                <header>
+                    <button name="action_send_for_calibration" string="Send for Calibration" type="object" class="btn-warning"
+                            invisible="state in ('in_calibration', 'retired')"/>
+                    <button name="action_calibration_done" string="Mark Calibrated" type="object" class="btn-success"
+                            invisible="state != 'in_calibration'"/>
+                    <button name="action_retire" string="Retire Equipment" type="object"
+                            invisible="state == 'retired'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,calibrated,in_calibration,overdue,retired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_calibration_done" class="oe_stat_button" icon="fa-calendar"
+                                invisible="state != 'in_calibration'">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Mark Done</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="OVERDUE" bg_color="bg-danger" invisible="not is_overdue"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Equipment Name..."/></h1>
+                        <h2><field name="equipment_code" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group string="Equipment Details">
+                            <field name="equipment_type"/>
+                            <field name="manufacturer"/>
+                            <field name="model_number"/>
+                            <field name="serial_number"/>
+                            <field name="measurement_range"/>
+                            <field name="accuracy"/>
+                        </group>
+                        <group string="Location &amp; Custodian">
+                            <field name="location"/>
+                            <field name="department_id"/>
+                            <field name="responsible_id"/>
+                        </group>
+                    </group>
+                    <group string="Calibration Schedule">
+                        <group>
+                            <field name="last_calibration_date"/>
+                            <field name="calibration_frequency"/>
+                            <field name="next_calibration_date" readonly="1"/>
+                            <field name="days_until_due" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="calibration_agency"/>
+                            <field name="calibration_certificate"/>
+                            <field name="is_overdue" widget="boolean_toggle" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Calibration History">
+                            <field name="history_ids">
+                                <tree string="History">
+                                    <field name="date"/>
+                                    <field name="performed_by"/>
+                                    <field name="agency"/>
+                                    <field name="certificate_no"/>
+                                    <field name="result" widget="badge"
+                                           decoration-success="result == 'pass'"
+                                           decoration-danger="result == 'fail'"
+                                           decoration-warning="result == 'conditional'"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes &amp; Attachments">
+                            <field name="notes"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Calibration List View -->
+    <record id="view_qms_calibration_list" model="ir.ui.view">
+        <field name="name">qms.calibration.list</field>
+        <field name="model">qms.calibration</field>
+        <field name="arch" type="xml">
+            <tree string="Equipment Calibration" decoration-danger="is_overdue == True">
+                <field name="equipment_code"/>
+                <field name="name"/>
+                <field name="equipment_type"/>
+                <field name="location"/>
+                <field name="responsible_id"/>
+                <field name="last_calibration_date"/>
+                <field name="next_calibration_date"/>
+                <field name="days_until_due"/>
+                <field name="is_overdue" widget="boolean_toggle" readonly="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'calibrated'"
+                       decoration-danger="state == 'overdue'"
+                       decoration-warning="state == 'in_calibration'"
+                       decoration-muted="state == 'retired'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Calibration Action -->
+    <record id="action_qms_calibration" model="ir.actions.act_window">
+        <field name="name">Equipment Calibration</field>
+        <field name="res_model">qms.calibration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Audit Form View -->
+    <record id="view_qms_audit_form" model="ir.ui.view">
+        <field name="name">qms.audit.form</field>
+        <field name="model">qms.audit</field>
+        <field name="arch" type="xml">
+            <form string="Quality Audit">
+                <header>
+                    <button name="action_start" string="Start Audit" type="object" class="btn-primary"
+                            invisible="state != 'planned'"/>
+                    <button name="action_review_findings" string="Review Findings" type="object" class="btn-primary"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_raise_capa" string="Raise CAPA" type="object" class="btn-warning"
+                            invisible="state != 'finding_review'"/>
+                    <button name="action_close" string="Close Audit" type="object" class="btn-success"
+                            invisible="state in ('closed', 'cancelled')"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('closed', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="planned,in_progress,finding_review,capa_raised,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_capa" class="oe_stat_button" icon="fa-shield"
+                                invisible="capa_count == 0">
+                            <field name="capa_count" widget="statinfo" string="CAPAs"/>
+                        </button>
+                        <button type="object" name="action_view_findings" class="oe_stat_button" icon="fa-search" invisible="finding_count == 0">
+                            <field name="finding_count" widget="statinfo" string="Findings"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2><field name="title" placeholder="Audit Title..."/></h2>
+                    </div>
+                    <group>
+                        <group string="Audit Info">
+                            <field name="audit_type"/>
+                            <field name="standard"/>
+                            <field name="audit_date"/>
+                            <field name="audit_end_date"/>
+                            <field name="close_date" invisible="state != 'closed'"/>
+                        </group>
+                        <group string="People">
+                            <field name="lead_auditor_id"/>
+                            <field name="auditee_id"/>
+                            <field name="department_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Scope &amp; Checklist">
+                            <field name="scope" widget="html" placeholder="Define the audit scope and objectives..."/>
+                            <separator string="Audit Checklist / Questions"/>
+                            <field name="checklist" widget="html" placeholder="Add checklist items..."/>
+                        </page>
+                        <page string="Findings">
+                            <field name="finding_ids">
+                                <tree editable="bottom">
+                                    <field name="finding_type"/>
+                                    <field name="clause"/>
+                                    <field name="description"/>
+                                    <field name="capa_id"/>
+                                </tree>
+                            </field>
+                            <separator string="Findings Summary"/>
+                            <field name="findings" widget="html" placeholder="Summary of all findings..."/>
+                        </page>
+                        <page string="Conclusion">
+                            <field name="conclusion" widget="html" placeholder="Audit conclusion and recommendations..."/>
+                        </page>
+                        <page string="CAPAs">
+                            <field name="capa_ids" widget="one2many">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="capa_type"/>
+                                    <field name="responsible_id"/>
+                                    <field name="target_date"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Audit List View -->
+    <record id="view_qms_audit_list" model="ir.ui.view">
+        <field name="name">qms.audit.list</field>
+        <field name="model">qms.audit</field>
+        <field name="arch" type="xml">
+            <tree string="Audits" default_order="audit_date desc">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="audit_type"/>
+                <field name="standard"/>
+                <field name="audit_date"/>
+                <field name="lead_auditor_id"/>
+                <field name="department_id"/>
+                <field name="finding_count"/>
+                <field name="capa_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'closed'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-warning="state in ('finding_review', 'capa_raised')"
+                       decoration-muted="state in ('planned', 'cancelled')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Audit Action -->
+    <record id="action_qms_audit" model="ir.actions.act_window">
+        <field name="name">Quality Audits</field>
+        <field name="res_model">qms.audit</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

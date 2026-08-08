@@ -1,246 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="wingspann_accounting.Dashboard" owl="1">
-        <div class="wingspann-dashboard container-fluid py-4">
-            <div t-if="state.isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+<t t-name="wingspann_accounting.Dashboard" owl="1">
+<div class="wd-dashboard">
+
+    <div t-if="state.isLoading" class="wd-loading text-center p-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-3 text-muted">Loading financial data…</p>
+    </div>
+
+    <div t-else="">
+        <!-- Header -->
+        <div class="wd-header">
+            <div>
+                <h2 class="wd-title">Financial Overview</h2>
+                <p class="wd-subtitle">Real-time accounting insights</p>
             </div>
-            
-            <div t-else="">
-                <!-- Header -->
-                <div class="row mb-4 align-items-center">
-                    <div class="col-md-8">
-                        <h2 class="wingspann-title fw-bold mb-1">Financial Overview</h2>
-                        <p class="text-muted mb-0">Real-time accounting insights for Wingspann Global</p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <button class="btn btn-primary wingspann-btn-primary me-2" t-on-click="createInvoice">
-                            <i class="fa fa-plus me-1"></i> Invoice
-                        </button>
-                        <button class="btn btn-secondary wingspann-btn-secondary" t-on-click="createBill">
-                            <i class="fa fa-plus me-1"></i> Bill
-                        </button>
-                    </div>
-                </div>
-
-                <!-- KPI Cards -->
-                <div class="row g-4 mb-5">
-                    <!-- Cash Flow -->
-                    <div class="col-12 col-md-4">
-                        <div class="wingspann-card widget-card gradient-primary text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <p class="card-title mb-1 opacity-75">Cash &amp; Bank</p>
-                                        <h3 class="card-value fw-bold mb-0">
-                                            <t t-esc="formatCurrency(state.data.cash_balance)"/>
-                                        </h3>
-                                    </div>
-                                    <div class="icon-shape bg-white text-primary rounded-circle shadow-sm">
-                                        <i class="fa fa-university fa-lg"></i>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <button class="btn btn-sm border-0 text-dark w-100 wingspann-hover-btn" style="background-color: #99ffff; font-weight: 500;" t-on-click="viewBank">
-                                        Manage Bank Accounts <i class="fa fa-arrow-right ms-1"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Receivables -->
-                    <div class="col-12 col-md-4">
-                        <div class="wingspann-card widget-card bg-white h-100 shadow-sm border-0 wingspann-hover-card" t-on-click="openReceivablesAnalytics" style="cursor: pointer;">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <p class="card-title mb-1 text-muted">Unpaid Receivables</p>
-                                        <h3 class="card-value fw-bold text-success mb-0">
-                                            <t t-esc="formatCurrency(state.data.receivables)"/>
-                                        </h3>
-                                    </div>
-                                    <div class="icon-shape bg-success text-white rounded-circle shadow-sm">
-                                        <i class="fa fa-arrow-circle-down fa-lg"></i>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-sm text-muted mb-0">Awaiting payment from customers</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Payables -->
-                    <div class="col-12 col-md-4">
-                        <div class="wingspann-card widget-card bg-white h-100 shadow-sm border-0 wingspann-hover-card" t-on-click="openPayablesAnalytics" style="cursor: pointer;">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <p class="card-title mb-1 text-muted">Unpaid Payables</p>
-                                        <h3 class="card-value fw-bold text-danger mb-0">
-                                            <t t-esc="formatCurrency(state.data.payables)"/>
-                                        </h3>
-                                    </div>
-                                    <div class="icon-shape bg-danger text-white rounded-circle shadow-sm">
-                                        <i class="fa fa-arrow-circle-up fa-lg"></i>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-sm text-muted mb-0">To be paid to vendors</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity Table -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card wingspann-card shadow-sm border-0">
-                            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-                                <h5 class="fw-bold mb-0">Recent Financial Activity</h5>
-                                <button class="btn btn-sm btn-outline-primary" t-on-click="viewJournalItems">
-                                    View All <i class="fa fa-chevron-right ms-1"></i>
-                                </button>
-                            </div>
-                            <div class="card-body p-0 mt-3">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="table-light text-muted text-uppercase text-xs">
-                                            <tr>
-                                                <th class="ps-4">Date</th>
-                                                <th>Reference</th>
-                                                <th>Partner</th>
-                                                <th>Type</th>
-                                                <th>Status</th>
-                                                <th class="text-end pe-4">Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-if="state.data.recent_moves.length === 0">
-                                                <tr>
-                                                    <td colspan="6" class="text-center py-4 text-muted">No recent activity found.</td>
-                                                </tr>
-                                            </t>
-                                            <tr t-foreach="state.data.recent_moves" t-as="move" t-key="move.id">
-                                                <td class="ps-4 text-muted"><t t-esc="move.date"/></td>
-                                                <td class="fw-bold"><t t-esc="move.name"/></td>
-                                                <td><t t-esc="move.partner"/></td>
-                                                <td>
-                                                    <span class="badge bg-secondary bg-opacity-10 text-dark border border-secondary-subtle rounded-pill">
-                                                        <t t-esc="move.type"/>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-success bg-opacity-10 text-white border border-success-subtle rounded-pill">
-                                                        <i class="fa fa-check-circle me-1"></i> Posted
-                                                    </span>
-                                                </td>
-                                                <td class="text-end pe-4 fw-bold">
-                                                    <t t-esc="formatCurrency(move.amount)"/>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="wd-header-actions">
+                <button class="wd-btn-refresh" t-on-click="refreshNow" title="Refresh data now">
+                    ↻ Refresh
+                </button>
+                <button class="wd-btn-invoice" t-on-click="createInvoice">
+                    + Invoice
+                </button>
+                <button class="wd-btn-bill" t-on-click="createBill">
+                    + Bill
+                </button>
             </div>
-            
-            <!-- Analytics Modal -->
-            <div t-if="state.showAnalyticsModal" class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content border-0 shadow-lg">
-                        <div class="modal-header text-white" t-att-class="state.analyticsType === 'receivables' ? 'bg-success' : 'bg-danger'">
-                            <h5 class="modal-title fw-bold">
-                                <i t-att-class="state.analyticsType === 'receivables' ? 'fa fa-arrow-circle-down me-2' : 'fa fa-arrow-circle-up me-2'"></i>
-                                <t t-esc="state.analyticsType === 'receivables' ? 'Receivables Analytics (Incoming Cash)' : 'Payables Analytics (Outgoing Cash)'"/>
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" t-on-click="closeAnalyticsModal"></button>
+        </div>
+
+        <!-- Main Panels -->
+        <div class="wd-main-panels">
+            <!-- Left Panel -->
+            <div class="wd-panel">
+                <div class="wd-section-title">Financial Breakdown &amp; Balance</div>
+
+                <!-- Allocated Budget Box -->
+                <div class="wd-kpi-box">
+                    <div class="wd-kpi-left">
+                        <div class="wd-kpi-label">
+                            Allocated Budget (<t t-esc="state.budgetData.fy_label"/>)
+                            <button class="wd-btn-set-budget" t-on-click="setBudget" title="Edit budget">
+                                ✏ Set Budget
+                            </button>
                         </div>
-                        <div class="modal-body p-4 bg-light">
-                            <!-- Top Metrics -->
-                            <div class="row g-3 mb-4">
-                                <div class="col-12 col-md-4">
-                                    <div class="card border-0 shadow-sm h-100">
-                                        <div class="card-body text-center py-4">
-                                            <p class="text-muted mb-1 fw-bold text-uppercase text-xs">Overall Expected (Budget)</p>
-                                            <h3 class="mb-0" t-att-class="state.analyticsType === 'receivables' ? 'text-success' : 'text-danger'">
-                                                <t t-esc="state.analyticsType === 'receivables' ? formatCurrency(state.data.receivables) : formatCurrency(state.data.payables)"/>
-                                            </h3>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="card border-0 shadow-sm h-100">
-                                        <div class="card-body text-center py-4">
-                                            <p class="text-muted mb-1 fw-bold text-uppercase text-xs">Current Month</p>
-                                            <h4 class="mb-0 text-dark">
-                                                <t t-esc="state.analyticsType === 'receivables' ? formatCurrency(state.data.incoming_monthly) : formatCurrency(state.data.outgoing_monthly)"/>
-                                            </h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="card border-0 shadow-sm h-100">
-                                        <div class="card-body text-center py-4">
-                                            <p class="text-muted mb-1 fw-bold text-uppercase text-xs">Current Week</p>
-                                            <h4 class="mb-0 text-dark">
-                                                <t t-esc="state.analyticsType === 'receivables' ? formatCurrency(state.data.incoming_weekly) : formatCurrency(state.data.outgoing_weekly)"/>
-                                            </h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Recent Payments Table -->
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-white border-bottom-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
-                                    <h6 class="fw-bold mb-0">Recent Payments</h6>
-                                    <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.viewPayments(state.analyticsType === 'receivables' ? 'inbound' : 'outbound')">
-                                        View All Payments <i class="fa fa-arrow-right ms-1"></i>
-                                    </button>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-hover align-middle mb-0">
-                                            <thead class="table-light text-muted text-xs">
-                                                <tr>
-                                                    <th class="ps-3">Date</th>
-                                                    <th>Reference</th>
-                                                    <th>Partner</th>
-                                                    <th class="text-end pe-3">Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-set="payments" t-value="state.analyticsType === 'receivables' ? state.data.recent_incoming : state.data.recent_outgoing"/>
-                                                <t t-if="payments.length === 0">
-                                                    <tr>
-                                                        <td colspan="4" class="text-center py-3 text-muted">No recent payments found.</td>
-                                                    </tr>
-                                                </t>
-                                                <tr t-foreach="payments" t-as="pay" t-key="pay.id">
-                                                    <td class="ps-3 text-muted"><t t-esc="pay.date"/></td>
-                                                    <td class="fw-bold"><t t-esc="pay.name"/></td>
-                                                    <td><t t-esc="pay.partner"/></td>
-                                                    <td class="text-end pe-3 fw-bold">
-                                                        <t t-esc="formatCurrency(pay.amount)"/>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="wd-kpi-value"><t t-esc="formatCurrency(state.budgetData.allocated_budget)"/></div>
                     </div>
+                    <div class="wd-kpi-right bg-teal-light">
+                        <t t-esc="formatCurrency(state.budgetData.allocated_budget)"/>
+                    </div>
+                </div>
+
+                <!-- Current Balance Box -->
+                <div class="wd-kpi-box">
+                    <div class="wd-kpi-left">
+                        <div class="wd-kpi-label">Current Balance</div>
+                        <div class="wd-kpi-value"><t t-esc="formatCurrency(state.budgetData.remaining_balance)"/></div>
+                    </div>
+                    <div class="wd-kpi-right bg-teal-lighter">
+                        <t t-esc="formatCurrency(state.budgetData.remaining_balance)"/>
+                    </div>
+                </div>
+
+                <!-- Expense Details Table -->
+                <div class="wd-section-title">Expense Details</div>
+                <table class="wd-expense-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Icon</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.budgetData.expense_categories" t-as="cat" t-key="cat.name">
+                            <tr>
+                                <td><t t-esc="cat.name"/></td>
+                                <td>
+                                    <i t-att-class="'fa ' + (cat.icon || 'fa-circle')"/>
+                                </td>
+                                <td><t t-esc="formatCurrency(cat.amount)"/></td>
+                            </tr>
+                        </t>
+                        <t t-if="state.budgetData.expense_categories.length === 0">
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No expenses found</td>
+                            </tr>
+                        </t>
+                        <tr>
+                            <td><strong>Total Expenses</strong></td>
+                            <td></td>
+                            <td><strong><t t-esc="formatCurrency(state.budgetData.total_expenses)"/></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Balanced Ledger -->
+                <div class="wd-section-title">Balanced Ledger</div>
+                <div class="wd-ledger-desc">Balanced Commitment vs Allocation.</div>
+                
+                <div class="wd-ledger-grid">
+                    <div class="wd-ledger-card" t-on-click="openPOList">
+                        <div class="wd-ledger-label">Open PO Commitments</div>
+                        <div class="wd-ledger-value"><t t-esc="formatCurrency(state.budgetData.po_commitment)"/></div>
+                    </div>
+                    <div class="wd-ledger-card" t-on-click="openPRList">
+                        <div class="wd-ledger-label">Approved PR Commitments</div>
+                        <div class="wd-ledger-value"><t t-esc="formatCurrency(state.budgetData.pr_commitment)"/></div>
+                    </div>
+                </div>
+                
+                <div class="wd-ledger-desc">Balanced Commitment vs Allocation.</div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="wd-panel">
+                <div class="wd-section-title">Budget vs. Expense Overview</div>
+                
+                <div class="wd-chart-container">
+                    <canvas t-ref="budgetChart" class="wd-donut-canvas" t-on-click="onChartClick"></canvas>
                 </div>
             </div>
         </div>
-    </t>
+
+    </div>
+</div>
+</t>
 </templates>

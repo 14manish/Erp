@@ -17,5 +17,62 @@ webclient_templates.xml
 .vscode/
 .idea/
 
+#Documents
+*.docs/
+docs/
+
 # Others
 .dbpassword
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Virtual environments and python tools
+venv/
+.venv/
+env/
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+
+# Documents
+*.docx
+*.csv
+*.xlsx
+
+# LaTeX build files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Docker / Environment
+.env
+.env.local
+docker-compose.override.yml
+odoo-web-data/
+odoo-db-data/
+pgdata/
+data/
+
+# Node/Frontend
+node_modules/
+.npm/

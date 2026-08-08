@@ -5,31 +5,31 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
 // ─── Layout constants ────────────────────────────────────────────────────────
-const PIXELS_PER_HOUR = 40;
-const HOUR_START      = 6;   // 6 AM
-const HOUR_END        = 22;  // 10 PM
-const VISIBLE_HOURS   = HOUR_END - HOUR_START;
-const DAY_WIDTH       = VISIBLE_HOURS * PIXELS_PER_HOUR; // 640px/day
-const ROW_HEIGHT      = 64;  // px per row
+const PIXELS_PER_HOUR = 100;
+const HOUR_START = 0;   // 12 AM
+const HOUR_END = 24;  // 12 AM next day
+const VISIBLE_HOURS = HOUR_END - HOUR_START;
+const DAY_WIDTH = VISIBLE_HOURS * PIXELS_PER_HOUR; // 1440px/day
+const ROW_HEIGHT = 64;  // px per row
 
 // ─── Status colours & labels ─────────────────────────────────────────────────
 const STATE_COLORS = {
-    pending:  "#a855f7",
-    ready:    "#22c55e",
+    pending: "#a855f7",
+    ready: "#22c55e",
     progress: "#3b82f6",
-    waiting:  "#f59e0b",
-    blocked:  "#ef4444",
-    done:     "#6b7280",
-    cancel:   "#d1d5db",
+    waiting: "#f59e0b",
+    blocked: "#ef4444",
+    done: "#6b7280",
+    cancel: "#d1d5db",
 };
 const STATE_LABELS = {
-    pending:  "Pending",
-    ready:    "Ready",
+    pending: "Pending",
+    ready: "Ready",
     progress: "In Progress",
-    waiting:  "Waiting",
-    blocked:  "Blocked",
-    done:     "Done",
-    cancel:   "Cancelled",
+    waiting: "Waiting",
+    blocked: "Blocked",
+    done: "Done",
+    cancel: "Cancelled",
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -51,25 +51,25 @@ export class MrpGanttView extends Component {
     static template = "mrp_workcenter_gantt.GanttView";
 
     setup() {
-        this.orm          = useService("orm");
-        this.action       = useService("action");
+        this.orm = useService("orm");
+        this.action = useService("action");
         this.notification = useService("notification");
 
         const today = midnightLocal(new Date());
         this.state = useState({
-            zoom:              "week",
-            rangeStart:        today,
-            workcenters:       [],   // all active WCs
-            hiddenWcIds:       [],   // WCs hidden from view
-            workorders:        [],   // enriched WOs
-            users:             [],   // list of active users/operators
-            productions:       {},   // productionId → {user, name}
-            loading:           true,
-            showManager:       false,
-            showEditModal:     false,
-            editingWo:         null, // copy of WO being edited
-            newMachineName:    "",
-            showFreeSlots:     true,
+            zoom: "week",
+            rangeStart: today,
+            workcenters: [],   // all active WCs
+            hiddenWcIds: [],   // WCs hidden from view
+            workorders: [],   // enriched WOs
+            users: [],   // list of active users/operators
+            productions: {},   // productionId → {user, name}
+            loading: true,
+            showManager: false,
+            showEditModal: false,
+            editingWo: null, // copy of WO being edited
+            newMachineName: "",
+            showFreeSlots: true,
         });
         this._drag = {};
         onMounted(() => this._loadData());
@@ -124,10 +124,10 @@ export class MrpGanttView extends Component {
         try {
             // 1. Update Work Order details (convert hours input back to minutes)
             await this.orm.write("mrp.workorder", [wo.id], {
-                workcenter_id:     wo.workcenter_id,
+                workcenter_id: wo.workcenter_id,
                 duration_expected: parseFloat(wo.duration_expected) * 60,
-                date_start:        odooDateStr,
-                state:             wo.state,
+                date_start: odooDateStr,
+                state: wo.state,
             });
 
             // 2. Update Responsible operator on the MO
@@ -174,7 +174,7 @@ export class MrpGanttView extends Component {
 
     // ── Range ─────────────────────────────────────────────────────────────────
     get rangeEnd() {
-        const end  = new Date(this.state.rangeStart);
+        const end = new Date(this.state.rangeStart);
         const days = { day: 1, week: 7, month: 30 }[this.state.zoom] ?? 7;
         end.setDate(end.getDate() + days);
         return end;
@@ -182,6 +182,7 @@ export class MrpGanttView extends Component {
     get totalWidth() {
         return ((this.rangeEnd - this.state.rangeStart) / 86_400_000) * DAY_WIDTH;
     }
+    get dayWidth() { return DAY_WIDTH; }
     get headerDays() {
         const days = [], cur = new Date(this.state.rangeStart);
         while (cur < this.rangeEnd) { days.push(new Date(cur)); cur.setDate(cur.getDate() + 1); }
@@ -191,12 +192,33 @@ export class MrpGanttView extends Component {
         return this.state.workcenters.filter(wc => !this.state.hiddenWcIds.includes(wc.id));
     }
     get rangeLabel() {
-        const M = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const D = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const s = this.state.rangeStart;
         const e = new Date(this.rangeEnd); e.setDate(e.getDate() - 1);
+        if (this.state.zoom === 'day')
+            return `${D[s.getDay()]}, ${s.getDate()} ${M[s.getMonth()]} ${s.getFullYear()}`;
         if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear())
             return `${s.getDate()} – ${e.getDate()} ${M[s.getMonth()]} ${s.getFullYear()}`;
         return `${s.getDate()} ${M[s.getMonth()]} – ${e.getDate()} ${M[e.getMonth()]} ${s.getFullYear()}`;
+    }
+
+    /** Returns hour slots for day-zoom header: [{ label, leftPx }] */
+    get headerHours() {
+        const slots = [];
+        for (let h = HOUR_START; h < HOUR_END; h++) {
+            slots.push({
+                label: this.formatHour(h),
+                leftPx: (h - HOUR_START) * PIXELS_PER_HOUR,
+            });
+        }
+        return slots;
+    }
+
+    formatHour(h) {
+        if (h === 0) return '12 AM';
+        if (h === 12) return '12 PM';
+        return h < 12 ? `${h} AM` : `${h - 12} PM`;
     }
 
     // ── Data loading ──────────────────────────────────────────────────────────
@@ -213,12 +235,12 @@ export class MrpGanttView extends Component {
                 this.orm.searchRead(
                     "mrp.workorder",
                     [
-                        ["date_start",  "!=", false],
-                        ["state",       "not in", ["cancel"]],
-                        ["date_start",  "<",  toOdooUTC(this.rangeEnd)],
+                        ["date_start", "!=", false],
+                        ["state", "not in", ["cancel"]],
+                        ["date_start", "<", toOdooUTC(this.rangeEnd)],
                     ],
                     ["id", "name", "workcenter_id", "date_start",
-                     "duration_expected", "state", "production_id"],
+                        "duration_expected", "state", "production_id"],
                     { limit: 1000 }
                 ),
                 this.orm.searchRead(
@@ -238,14 +260,14 @@ export class MrpGanttView extends Component {
 
             workorders.forEach(wo => {
                 const prod = wo.production_id ? prodMap[wo.production_id[0]] : null;
-                wo._moRef    = prod?.name ?? "—";
+                wo._moRef = prod?.name ?? "—";
                 wo._userName = prod?.user_id?.[1] ?? "Unassigned";
-                wo._userId   = prod?.user_id?.[0] ?? false;
+                wo._userId = prod?.user_id?.[0] ?? false;
             });
 
             this.state.workcenters = workcenters;
-            this.state.workorders  = workorders;
-            this.state.users       = users;
+            this.state.workorders = workorders;
+            this.state.users = users;
         } catch (e) {
             console.error(e);
             this.notification.add("Failed to load schedule data.", { type: "danger" });
@@ -286,8 +308,8 @@ export class MrpGanttView extends Component {
         const slots = [];
         this.headerDays.forEach((day, di) => {
             const dayStart = new Date(day); dayStart.setHours(HOUR_START, 0, 0, 0);
-            const dayEnd   = new Date(day); dayEnd.setHours(HOUR_END, 0, 0, 0);
-            const busy     = busyIntervals.filter(i => i.e > dayStart && i.s < dayEnd);
+            const dayEnd = new Date(day); dayEnd.setHours(HOUR_END, 0, 0, 0);
+            const busy = busyIntervals.filter(i => i.e > dayStart && i.s < dayEnd);
 
             const pushSlot = (from, to) => {
                 const wPx = (to - from) / 3_600_000 * PIXELS_PER_HOUR;
@@ -318,15 +340,15 @@ export class MrpGanttView extends Component {
         const start = fromOdooUTC(wo.date_start);
         if (!start) return "display:none";
         const durMs = (wo.duration_expected || 60) * 60_000;
-        const end   = new Date(start.getTime() + durMs);
+        const end = new Date(start.getTime() + durMs);
         if (end < this.state.rangeStart || start >= this.rangeEnd) return "display:none";
 
         const offsetHours = (start - this.state.rangeStart) / 3_600_000;
-        const dayIndex    = Math.floor(offsetHours / 24);
-        const hourOfDay   = start.getHours() + start.getMinutes() / 60;
-        const leftPx      = dayIndex * DAY_WIDTH + (hourOfDay - HOUR_START) * PIXELS_PER_HOUR;
-        const widthPx     = Math.max((wo.duration_expected || 60) / 60 * PIXELS_PER_HOUR, 36);
-        const color       = STATE_COLORS[wo.state] ?? STATE_COLORS.ready;
+        const dayIndex = Math.floor(offsetHours / 24);
+        const hourOfDay = start.getHours() + start.getMinutes() / 60;
+        const leftPx = dayIndex * DAY_WIDTH + (hourOfDay - HOUR_START) * PIXELS_PER_HOUR;
+        const widthPx = Math.max((wo.duration_expected || 60) / 60 * PIXELS_PER_HOUR, 36);
+        const color = STATE_COLORS[wo.state] ?? STATE_COLORS.ready;
 
         return `left:${leftPx}px; width:${widthPx}px; background-color:${color};`;
     }
@@ -338,27 +360,27 @@ export class MrpGanttView extends Component {
     get todayLineStyle() {
         const now = new Date(), s = this.state.rangeStart;
         if (now < s || now >= this.rangeEnd) return "display:none";
-        const di  = Math.floor((now - s) / 86_400_000);
-        const h   = now.getHours() + now.getMinutes() / 60;
+        const di = Math.floor((now - s) / 86_400_000);
+        const h = now.getHours() + now.getMinutes() / 60;
         return `left:${di * DAY_WIDTH + (h - HOUR_START) * PIXELS_PER_HOUR}px`;
     }
 
     isToday(day) {
         const t = new Date();
         return day.getFullYear() === t.getFullYear() &&
-               day.getMonth()    === t.getMonth()    &&
-               day.getDate()     === t.getDate();
+            day.getMonth() === t.getMonth() &&
+            day.getDate() === t.getDate();
     }
 
     formatDayHeader(day) {
-        const D = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const D = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         return `${D[day.getDay()]} ${day.getDate()}/${day.getMonth() + 1}`;
     }
 
     // ── Tooltip ───────────────────────────────────────────────────────────────
     getTooltip(wo) {
         const start = fromOdooUTC(wo.date_start);
-        const durH  = ((wo.duration_expected || 0) / 60).toFixed(1);
+        const durH = ((wo.duration_expected || 0) / 60).toFixed(1);
         return [
             `📋 ${wo.name}`,
             `🔧 MO: ${wo._moRef}`,
@@ -370,7 +392,7 @@ export class MrpGanttView extends Component {
     }
 
     getStateLabel(s) { return STATE_LABELS[s] ?? s; }
-    getStateColor(s) { return STATE_COLORS[s]  ?? STATE_COLORS.ready; }
+    getStateColor(s) { return STATE_COLORS[s] ?? STATE_COLORS.ready; }
 
     // ── Navigation ────────────────────────────────────────────────────────────
     _shift(dir) {
@@ -380,8 +402,8 @@ export class MrpGanttView extends Component {
         this.state.rangeStart = s;
         this._loadData();
     }
-    onPrev()  { this._shift(-1); }
-    onNext()  { this._shift(+1); }
+    onPrev() { this._shift(-1); }
+    onNext() { this._shift(+1); }
     onToday() { this.state.rangeStart = midnightLocal(new Date()); this._loadData(); }
     onZoom(z) { this.state.zoom = z; this._loadData(); }
     onWheel(ev) {
@@ -451,21 +473,21 @@ export class MrpGanttView extends Component {
         ev.dataTransfer.effectAllowed = "move";
         setTimeout(() => { ev.target && (ev.target.style.opacity = "0.45"); }, 0);
     }
-    onDragEnd(ev)   { ev.target && (ev.target.style.opacity = "1"); }
-    onDragOver(ev)  { ev.preventDefault(); ev.dataTransfer.dropEffect = "move"; }
+    onDragEnd(ev) { ev.target && (ev.target.style.opacity = "1"); }
+    onDragOver(ev) { ev.preventDefault(); ev.dataTransfer.dropEffect = "move"; }
 
     async onDrop(ev, wcId) {
         ev.preventDefault();
         const { woId, startX } = this._drag;
         if (!woId) return;
-        const wo       = this.state.workorders.find(w => w.id === woId);
+        const wo = this.state.workorders.find(w => w.id === woId);
         if (!wo) return;
-        const dH       = (ev.clientX - startX) / PIXELS_PER_HOUR;
+        const dH = (ev.clientX - startX) / PIXELS_PER_HOUR;
         const newStart = new Date(fromOdooUTC(wo.date_start).getTime() + dH * 3_600_000);
         try {
             await this.orm.write("mrp.workorder", [woId], {
-                date_start:        toOdooUTC(newStart),
-                workcenter_id:     wcId,
+                date_start: toOdooUTC(newStart),
+                workcenter_id: wcId,
                 duration_expected: wo.duration_expected, // Lock the original duration!
             });
             this.notification.add("Work order rescheduled ✓", { type: "success" });
@@ -478,13 +500,13 @@ export class MrpGanttView extends Component {
     // ── Legend ────────────────────────────────────────────────────────────────
     get legendItems() {
         return [
-            { label: "Ready",       color: STATE_COLORS.ready    },
-            { label: "In Progress", color: STATE_COLORS.progress  },
-            { label: "Waiting",     color: STATE_COLORS.waiting   },
-            { label: "Pending",     color: STATE_COLORS.pending   },
-            { label: "Blocked",     color: STATE_COLORS.blocked   },
-            { label: "Done",        color: STATE_COLORS.done      },
-            { label: "Free Time",   color: "#d1fae5", border: true },
+            { label: "Ready", color: STATE_COLORS.ready },
+            { label: "In Progress", color: STATE_COLORS.progress },
+            { label: "Waiting", color: STATE_COLORS.waiting },
+            { label: "Pending", color: STATE_COLORS.pending },
+            { label: "Blocked", color: STATE_COLORS.blocked },
+            { label: "Done", color: STATE_COLORS.done },
+            { label: "Free Time", color: "#d1fae5", border: true },
         ];
     }
 }

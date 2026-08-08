@@ -13,6 +13,19 @@
                 <attribute name="invisible">0</attribute>
             </xpath>
 
+            <!-- Replace original PO Number (name) with split fields -->
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="name" invisible="True"/>
+                <div class="d-flex flex-row align-items-baseline" invisible="state in ('purchase', 'done', 'cancel')">
+                    <field name="x_po_prefix" readonly="True" force_save="True" class="oe_inline text-muted" style="margin-right: 2px; font-weight: bold;"/>
+                    <field name="x_po_number_suffix" class="oe_inline" readonly="False"/>
+                </div>
+                <div class="d-flex flex-row align-items-baseline" invisible="state not in ('purchase', 'done', 'cancel')">
+                    <span class="oe_inline text-muted" style="margin-right: 2px; font-weight: bold;"><field name="x_po_prefix" readonly="True"/></span>
+                    <span class="oe_inline"><field name="x_po_number_suffix" readonly="True"/></span>
+                </div>
+            </xpath>
+
             <!-- Add Quotation Ref and Date next to Date Order -->
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="x_quotation_ref"/>

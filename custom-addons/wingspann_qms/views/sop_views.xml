@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SOP Form View -->
+    <record id="view_qms_sop_form" model="ir.ui.view">
+        <field name="name">qms.sop.form</field>
+        <field name="model">qms.sop</field>
+        <field name="arch" type="xml">
+            <form string="Document Control">
+                <header>
+                    <button name="action_submit_review" string="Submit for Review" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve &amp; Activate" type="object" class="btn-success"
+                            invisible="state != 'review'"/>
+                    <button name="action_new_revision" string="New Revision" type="object" class="btn-warning"
+                            invisible="state != 'approved'"/>
+                    <button name="action_obsolete" string="Mark Obsolete" type="object"
+                            invisible="state in ('obsolete', 'draft')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,review,approved,obsolete"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="OBSOLETE" bg_color="bg-secondary" invisible="state != 'obsolete'"/>
+                    <div class="oe_title">
+                        <h1><field name="doc_number" readonly="1"/></h1>
+                        <h2><field name="name" placeholder="Document Title..."/></h2>
+                    </div>
+                    <group>
+                        <group string="Document Info">
+                            <field name="doc_type"/>
+                            <field name="revision"/>
+                            <field name="effective_date"/>
+                            <field name="review_date"/>
+                        </group>
+                        <group string="Ownership">
+                            <field name="author_id"/>
+                            <field name="reviewer_id"/>
+                            <field name="approver_id"/>
+                            <field name="department_id"/>
+                        </group>
+                    </group>
+                    <group string="Scope">
+                        <field name="scope" placeholder="Brief scope or purpose of this document..."/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                        <field name="tag_ids" widget="many2many_tags"/>
+                    </group>
+                    <notebook>
+                        <page string="Document Content">
+                            <field name="content" widget="html" placeholder="Write the procedure steps, instructions, or policy content here..."/>
+                        </page>
+                        <page string="Revision History">
+                            <field name="change_history_ids">
+                                <tree string="History">
+                                    <field name="revision"/>
+                                    <field name="date"/>
+                                    <field name="approved_by"/>
+                                    <field name="change_summary"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- SOP List View -->
+    <record id="view_qms_sop_list" model="ir.ui.view">
+        <field name="name">qms.sop.list</field>
+        <field name="model">qms.sop</field>
+        <field name="arch" type="xml">
+            <tree string="Documents">
+                <field name="doc_number"/>
+                <field name="name"/>
+                <field name="doc_type"/>
+                <field name="revision"/>
+                <field name="author_id"/>
+                <field name="effective_date"/>
+                <field name="review_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state == 'review'"
+                       decoration-muted="state in ('draft', 'obsolete')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- SOP Action -->
+    <record id="action_qms_sop" model="ir.actions.act_window">
+        <field name="name">Document Control</field>
+        <field name="res_model">qms.sop</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

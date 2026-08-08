@@ -1,0 +1,49 @@
+/* wingspann_qms/static/src/css/qms_dashboard.css */
+
+.qms_dashboard {
+    padding: 24px;
+    background: #f5f7fa;
+    min-height: 100vh;
+}
+
+.qms-kpi-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e8ecf0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.qms-kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.qms-kpi-card.danger { border-left: 4px solid #dc3545; }
+.qms-kpi-card.warning { border-left: 4px solid #ffc107; }
+.qms-kpi-card.success { border-left: 4px solid #28a745; }
+.qms-kpi-card.info { border-left: 4px solid #17a2b8; }
+.qms-kpi-card.purple { border-left: 4px solid #6f42c1; }
+
+.qms-kpi-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.qms-kpi-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.qms-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8ecf0;
+}

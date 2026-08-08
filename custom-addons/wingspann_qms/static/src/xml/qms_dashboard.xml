@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- placeholder template -->
+    <t t-name="wingspann_qms.Dashboard" owl="1">
+        <div class="qms_dashboard">
+            <h2>QMS Dashboard</h2>
+        </div>
+    </t>
+</templates>

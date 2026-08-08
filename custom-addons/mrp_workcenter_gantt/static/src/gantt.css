@@ -221,6 +221,23 @@
     border-bottom: 2px solid #f59e0b;
 }
 
+/* ── Hour ticks (day zoom) ────────────────────────────────── */
+.o_gantt_hour_tick {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #495057;
+    padding-left: 4px;
+    white-space: nowrap;
+    border-left: 1px solid #dee2e6;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+}
+
 /* ── Rows ─────────────────────────────────────────────────── */
 .o_gantt_rows_outer { position: relative; }
 

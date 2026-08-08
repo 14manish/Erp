@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CAPA Form View -->
+    <record id="view_qms_capa_form" model="ir.ui.view">
+        <field name="name">qms.capa.form</field>
+        <field name="model">qms.capa</field>
+        <field name="arch" type="xml">
+            <form string="CAPA">
+                <header>
+                    <button name="action_start" string="Start" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_pending_verification" string="Submit for Verification" type="object" class="btn-primary"
+                            invisible="state != 'open'"/>
+                    <button name="action_verify_effective" string="Verify Effective" type="object" class="btn-success"
+                            invisible="state != 'verification'"/>
+                    <button name="action_close" string="Close CAPA" type="object" class="btn-success"
+                            invisible="state in ('closed', 'cancelled')"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('closed', 'cancelled', 'effective')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,verification,effective,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <div class="o_field_widget o_priority">
+                            <field name="priority" widget="priority"/>
+                        </div>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2><field name="title" placeholder="CAPA Title..."/></h2>
+                    </div>
+                    <group>
+                        <group string="Details">
+                            <field name="capa_type"/>
+                            <field name="date_raised"/>
+                            <field name="target_date"/>
+                            <field name="date_verified" invisible="state not in ('effective', 'closed')"/>
+                            <field name="date_closed" invisible="state != 'closed'"/>
+                            <field name="is_overdue" widget="boolean_toggle" readonly="1"/>
+                        </group>
+                        <group string="Responsibility">
+                            <field name="responsible_id"/>
+                            <field name="approver_id"/>
+                            <field name="department_id"/>
+                            <field name="product_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                    </group>
+                    <group string="Source">
+                        <field name="ncr_id"/>
+                        <field name="audit_id"/>
+                        <field name="complaint_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Root Cause Analysis">
+                            <field name="root_cause" widget="html" placeholder="Describe the root cause identified..."/>
+                        </page>
+                        <page string="Action Plan">
+                            <field name="action_description" widget="html" placeholder="Describe the corrective / preventive action steps..."/>
+                        </page>
+                        <page string="Effectiveness">
+                            <field name="effectiveness_criteria" widget="html" placeholder="How will you verify the action is effective?"/>
+                            <field name="verification_notes" widget="html" placeholder="Notes from verification checks..."/>
+                        </page>
+                        <page string="Attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- CAPA List View -->
+    <record id="view_qms_capa_list" model="ir.ui.view">
+        <field name="name">qms.capa.list</field>
+        <field name="model">qms.capa</field>
+        <field name="arch" type="xml">
+            <tree string="CAPA" decoration-danger="is_overdue == True" default_order="target_date asc">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="capa_type"/>
+                <field name="priority" widget="priority"/>
+                <field name="responsible_id"/>
+                <field name="target_date"/>
+                <field name="is_overdue" widget="boolean_toggle" readonly="1"/>
+                <field name="ncr_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('effective', 'closed')"
+                       decoration-warning="state == 'verification'"
+                       decoration-info="state == 'open'"
+                       decoration-muted="state in ('draft', 'cancelled')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- CAPA Search View -->
+    <record id="view_qms_capa_search" model="ir.ui.view">
+        <field name="name">qms.capa.search</field>
+        <field name="model">qms.capa</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="responsible_id"/>
+                <filter name="overdue" string="Overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'open')]"/>
+                <filter name="pending_verification" string="Pending Verification" domain="[('state', '=', 'verification')]"/>
+                <group expand="1" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'capa_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- CAPA Action -->
+    <record id="action_qms_capa" model="ir.actions.act_window">
+        <field name="name">CAPA</field>
+        <field name="res_model">qms.capa</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_qms_capa_search"/>
+        <field name="context">{'search_default_in_progress': 1}</field>
+    </record>
+</odoo>

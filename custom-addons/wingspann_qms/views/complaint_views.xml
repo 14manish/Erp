@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Complaint Form View -->
+    <record id="view_qms_complaint_form" model="ir.ui.view">
+        <field name="name">qms.complaint.form</field>
+        <field name="model">qms.complaint</field>
+        <field name="arch" type="xml">
+            <form string="Customer Complaint">
+                <header>
+                    <button name="action_investigate" string="Start Investigation" type="object" class="btn-primary"
+                            invisible="state != 'new'"/>
+                    <button name="action_raise_capa" string="Raise CAPA" type="object" class="btn-warning"
+                            invisible="state not in ('new', 'investigating')"/>
+                    <button name="action_resolve" string="Mark Resolved" type="object" class="btn-success"
+                            invisible="state in ('resolved', 'closed')"/>
+                    <button name="action_close" string="Close" type="object"
+                            invisible="state == 'closed'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,investigating,capa_raised,resolved,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_capa" class="oe_stat_button" icon="fa-shield" invisible="capa_count == 0">
+                            <field name="capa_count" widget="statinfo" string="CAPAs"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2><field name="title" placeholder="Complaint Title..."/></h2>
+                    </div>
+                    <group>
+                        <group string="Complaint Details">
+                            <field name="complaint_type"/>
+                            <field name="severity"/>
+                            <field name="date_received"/>
+                            <field name="date_resolved" invisible="state not in ('resolved', 'closed')"/>
+                            <field name="warranty_claim"/>
+                            <field name="replacement_issued"/>
+                        </group>
+                        <group string="Customer &amp; Product">
+                            <field name="customer_id"/>
+                            <field name="responsible_id"/>
+                            <field name="product_id"/>
+                            <field name="lot_id" domain="[('product_id', '=', product_id)]"/>
+                            <field name="invoice_id"/>
+                            <field name="delivery_id"/>
+                            <field name="mrp_production_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Complaint Description">
+                            <field name="complaint_description" widget="html" placeholder="Describe what the customer reported..."/>
+                            <separator string="Customer Expectation"/>
+                            <field name="customer_expectation" widget="html" placeholder="What resolution does the customer expect?"/>
+                        </page>
+                        <page string="Investigation">
+                            <field name="investigation_notes" widget="html" placeholder="Investigation findings..."/>
+                        </page>
+                        <page string="Resolution">
+                            <field name="resolution" widget="html" placeholder="Resolution provided to customer..."/>
+                            <field name="customer_satisfaction"/>
+                        </page>
+                        <page string="CAPAs">
+                            <field name="capa_ids" widget="one2many">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="capa_type"/>
+                                    <field name="responsible_id"/>
+                                    <field name="target_date"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Complaint List View -->
+    <record id="view_qms_complaint_list" model="ir.ui.view">
+        <field name="name">qms.complaint.list</field>
+        <field name="model">qms.complaint</field>
+        <field name="arch" type="xml">
+            <tree string="Complaints" decoration-danger="severity == 'critical'" default_order="date_received desc">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="customer_id"/>
+                <field name="complaint_type"/>
+                <field name="severity"/>
+                <field name="product_id"/>
+                <field name="date_received"/>
+                <field name="responsible_id"/>
+                <field name="warranty_claim" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'closed'"
+                       decoration-info="state in ('resolved',)"
+                       decoration-warning="state in ('investigating', 'capa_raised')"
+                       decoration-danger="state == 'new'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Complaint Action -->
+    <record id="action_qms_complaint" model="ir.actions.act_window">
+        <field name="name">Customer Complaints</field>
+        <field name="res_model">qms.complaint</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

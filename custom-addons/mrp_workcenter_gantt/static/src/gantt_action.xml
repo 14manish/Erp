@@ -131,12 +131,28 @@
 
             <!-- Header row -->
             <div class="o_gantt_header_row" t-att-style="'min-width:' + totalWidth + 'px'">
-              <div t-foreach="headerDays" t-as="day" t-key="day_index"
-                   class="o_gantt_day_header"
-                   t-att-class="isToday(day) ? 'o_gantt_today_col' : ''"
-                   style="width:640px">
-                <span t-esc="formatDayHeader(day)"/>
-              </div>
+
+              <!-- DAY zoom: show hour-by-hour ticks -->
+              <t t-if="state.zoom === 'day'">
+                <div class="o_gantt_day_header o_gantt_today_col" t-att-style="'position:relative; width:' + totalWidth + 'px'">
+                  <div t-foreach="headerHours" t-as="tick" t-key="tick_index"
+                       class="o_gantt_hour_tick"
+                       t-att-style="'left:' + tick.leftPx + 'px'">
+                    <t t-esc="tick.label"/>
+                  </div>
+                </div>
+              </t>
+
+              <!-- WEEK / MONTH zoom: show day labels as before -->
+              <t t-else="">
+                <div t-foreach="headerDays" t-as="day" t-key="day_index"
+                     class="o_gantt_day_header"
+                     t-att-class="isToday(day) ? 'o_gantt_today_col' : ''"
+                     t-att-style="'width:' + dayWidth + 'px'">
+                  <span t-esc="formatDayHeader(day)"/>
+                </div>
+              </t>
+
             </div>
 
             <!-- Rows -->

@@ -11,7 +11,7 @@
     """,
     'author': "Wingspann Global",
     'category': 'Accounting/Localizations',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.0.1',
     'depends': ['account', 'web', 'l10n_in'],
     'data': [
         'security/ir.model.access.csv',
@@ -25,7 +25,7 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'wingspann_accounting/static/src/css/dashboard.css',
+            'wingspann_accounting/static/src/css/dashboard.scss',
             'wingspann_accounting/static/src/js/dashboard.js',
             'wingspann_accounting/static/src/xml/dashboard.xml',
         ],

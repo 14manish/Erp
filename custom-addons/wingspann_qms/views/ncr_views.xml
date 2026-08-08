@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- NCR Form View -->
+    <record id="view_qms_ncr_form" model="ir.ui.view">
+        <field name="name">qms.ncr.form</field>
+        <field name="model">qms.ncr</field>
+        <field name="arch" type="xml">
+            <form string="Non-Conformance Report">
+                <header>
+                    <button name="action_open" string="Open" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_under_review" string="Send for Review" type="object" class="btn-primary"
+                            invisible="state != 'open'"/>
+                    <button name="action_raise_capa" string="Raise CAPA" type="object" class="btn-warning"
+                            invisible="state not in ('open', 'under_review')"/>
+                    <button name="action_close" string="Close NCR" type="object" class="btn-success"
+                            invisible="state in ('closed', 'cancelled')"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('closed', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,under_review,capa_raised,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_capa" type="object" class="oe_stat_button" icon="fa-shield"
+                                invisible="capa_count == 0">
+                            <field name="capa_count" widget="statinfo" string="CAPAs"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2><field name="title" placeholder="NCR Title..."/></h2>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="ncr_type"/>
+                            <field name="severity" widget="priority"/>
+                            <field name="date_detected"/>
+                            <field name="date_closed" invisible="state != 'closed'"/>
+                        </group>
+                        <group string="Responsibility">
+                            <field name="detected_by"/>
+                            <field name="responsible_id"/>
+                            <field name="department_id"/>
+                        </group>
+                    </group>
+                    <group string="Product / Component">
+                        <group>
+                            <field name="product_id"/>
+                            <field name="lot_id" domain="[('product_id', '=', product_id)]"/>
+                            <field name="qty_nonconforming"/>
+                            <field name="uom_id"/>
+                        </group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="purchase_order_id"/>
+                            <field name="picking_id"/>
+                            <field name="mrp_production_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" widget="html" placeholder="Describe the non-conformance in detail..."/>
+                        </page>
+                        <page string="Root Cause">
+                            <field name="root_cause" widget="html" placeholder="5-Why, Fishbone Analysis..."/>
+                        </page>
+                        <page string="Immediate Action">
+                            <field name="immediate_action" widget="html" placeholder="Containment actions taken immediately..."/>
+                        </page>
+                        <page string="CAPAs">
+                            <field name="capa_ids" widget="one2many">
+                                <tree string="CAPAs">
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="capa_type"/>
+                                    <field name="responsible_id"/>
+                                    <field name="target_date"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- NCR List View -->
+    <record id="view_qms_ncr_list" model="ir.ui.view">
+        <field name="name">qms.ncr.list</field>
+        <field name="model">qms.ncr</field>
+        <field name="arch" type="xml">
+            <tree string="Non-Conformance Reports" decoration-danger="severity == 'critical'"
+                  decoration-warning="severity == 'major'" default_order="date_detected desc">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="ncr_type"/>
+                <field name="severity" widget="priority"/>
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="date_detected"/>
+                <field name="responsible_id"/>
+                <field name="capa_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'closed'"
+                       decoration-warning="state in ('open', 'under_review')"
+                       decoration-info="state == 'capa_raised'"
+                       decoration-muted="state in ('draft', 'cancelled')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- NCR Kanban View -->
+    <record id="view_qms_ncr_kanban" model="ir.ui.view">
+        <field name="name">qms.ncr.kanban</field>
+        <field name="model">qms.ncr</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="ncr_type"/>
+                <field name="severity"/>
+                <field name="state"/>
+                <field name="responsible_id"/>
+                <field name="date_detected"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <strong><t t-esc="record.name.value"/></strong>
+                                    <span class="badge rounded-pill float-end"
+                                          t-attf-class="bg-#{record.severity.value == 'critical' ? 'danger' : record.severity.value == 'major' ? 'warning' : 'info'}">
+                                        <t t-esc="record.severity.value"/>
+                                    </span>
+                                </div>
+                                <div><t t-esc="record.title.value"/></div>
+                                <div class="text-muted small mt-1">
+                                    <t t-esc="record.ncr_type.value"/> | <t t-esc="record.date_detected.value"/>
+                                </div>
+                                <div class="o_kanban_record_bottom mt-2">
+                                    <span><t t-esc="record.responsible_id.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- NCR Search View -->
+    <record id="view_qms_ncr_search" model="ir.ui.view">
+        <field name="name">qms.ncr.search</field>
+        <field name="model">qms.ncr</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="NCR Reference"/>
+                <field name="title"/>
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="responsible_id"/>
+                <filter name="open" string="Open" domain="[('state', 'in', ('open', 'under_review'))]"/>
+                <filter name="critical" string="Critical" domain="[('severity', '=', 'critical')]"/>
+                <group expand="1" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="NCR Type" context="{'group_by': 'ncr_type'}"/>
+                    <filter name="group_severity" string="Severity" context="{'group_by': 'severity'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- NCR Action -->
+    <record id="action_qms_ncr" model="ir.actions.act_window">
+        <field name="name">Non-Conformance Reports</field>
+        <field name="res_model">qms.ncr</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_qms_ncr_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+</odoo>
