@@ -9,6 +9,7 @@
                         display: flex;
                         align-items: center;
                         margin-bottom: 20px;
+                        margin-top: 0px;
                     }
                     .po-title {
                         text-align: center;
@@ -77,7 +78,7 @@
                 <!-- Header Section -->
                 <div class="row po-header" style="align-items: center;">
                     <div class="col-4">
-                        <img src="/drone_traceability/static/src/img/Icon.png" style="max-height: 85px;" alt="Wingspann Logo"/>
+                        <img src="/drone_traceability/static/src/img/Icon.png?v=2" style="max-height: 85px;" alt="Wingspann Logo"/>
                     </div>
                     <div class="col-4 text-center" style="font-size: 13px; font-weight: bold; letter-spacing: 0.5px;">
                         OFFICIAL
@@ -223,7 +224,13 @@
                         <tr>
                             <td style="width: 20%; padding: 0 5px;">
                                 Prepared By<br/>
-                                (Pranjal Chandekar)
+                                (<span t-esc="o.user_id.name"/>)
+                                <t t-if="o.user_id.phone or o.user_id.mobile">
+                                    <br/><span t-esc="o.user_id.phone or o.user_id.mobile"/>
+                                </t>
+                                <t t-if="o.user_id.email">
+                                    <br/><span t-esc="o.user_id.email"/>
+                                </t>
                             </td>
                             <td style="width: 20%; padding: 0 5px;">
                                 Finance Department<br/>
@@ -248,7 +255,7 @@
                 <!-- Footer Section -->
                 <div class="po-footer">
                     <div>Wingspann Global Pvt Ltd, Gut No. 53 ,Plot 2 &amp; 3, Shajapur, MIDC Waluj, Aurangabad – 431136, Maharashtra, India</div>
-                    <div>GSTIN 27AAECW2565K1ZX</div>
+                    <div><strong>GSTIN 27AAECW2565K1ZX</strong></div>
                     <div style="margin-top: 5px;">© Wingspann Global Private Limited, <span t-esc="o.date_order.year if o.date_order else 2026"/>. All rights reserved.</div>
                 </div>
             </div>
@@ -319,7 +326,7 @@
                 <!-- Header Section -->
                 <div class="row po-header" style="align-items: center;">
                     <div class="col-4">
-                        <img src="/drone_traceability/static/src/img/Icon.png" style="max-height: 85px;" alt="Wingspann Logo"/>
+                        <img src="/drone_traceability/static/src/img/Icon.png?v=2" style="max-height: 85px;" alt="Wingspann Logo"/>
                     </div>
                     <div class="col-4 text-center" style="font-size: 13px; font-weight: bold; letter-spacing: 0.5px;">
                         OFFICIAL
@@ -398,7 +405,7 @@
                 <!-- Footer Section -->
                 <div class="po-footer">
                     <div>Wingspann Global Pvt Ltd, Gut No. 53 ,Plot 2 &amp; 3, Shajapur, MIDC Waluj, Aurangabad – 431136, Maharashtra, India</div>
-                    <div>GSTIN 27AAECW2565K1ZX</div>
+                    <div><strong>GSTIN 27AAECW2565K1ZX</strong></div>
                     <div style="margin-top: 5px;">© Wingspann Global Private Limited, <span t-esc="o.date_order.year if o.date_order else 2026"/>. All rights reserved.</div>
                 </div>
             </div>
